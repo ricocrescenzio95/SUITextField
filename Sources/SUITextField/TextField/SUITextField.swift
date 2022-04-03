@@ -22,6 +22,7 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
 
     @Binding private var text: String
     private var placeholder: String?
+    private var autoSizeInputView: Bool
     private var inputView: InputView
     private var inputAccessoryView: InputAccessoryView
     private var leftView: LeftView
@@ -49,11 +50,13 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
         inputAccessoryView = EmptyView()
         leftView = EmptyView()
         rightView = EmptyView()
+        autoSizeInputView = false
     }
 
     init(
         text: Binding<String>,
         placeholder: String? = nil,
+        autoSizeInputView: Bool,
         @ViewBuilder leftView: () -> LeftView,
         @ViewBuilder rightView: () -> RightView,
         @ViewBuilder inputView: () -> InputView,
@@ -61,6 +64,7 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     ) {
         self._text = text
         self.placeholder = placeholder
+        self.autoSizeInputView = autoSizeInputView
         self.leftView = leftView()
         self.rightView = rightView()
         self.inputView = inputView()
@@ -74,11 +78,12 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
 public extension SUITextField where InputAccessoryView == EmptyView {
 
     func inputAccessoryView<Content>(
-        @ViewBuilder _ view: () -> Content
+        @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, Content, LeftView, RightView> where Content: View {
         SUITextField<InputView, Content, LeftView, RightView>(
             text: $text,
             placeholder: placeholder,
+            autoSizeInputView: autoSizeInputView,
             leftView: { leftView },
             rightView: { rightView },
             inputView: { inputView },
@@ -91,11 +96,13 @@ public extension SUITextField where InputAccessoryView == EmptyView {
 public extension SUITextField where InputView == EmptyView {
 
     func inputView<Content>(
-        @ViewBuilder _ view: () -> Content
+        autoSize: Bool = true,
+        @ViewBuilder view: () -> Content
     ) -> SUITextField<Content, InputAccessoryView, LeftView, RightView> where Content: View {
         SUITextField<Content, InputAccessoryView, LeftView, RightView>(
             text: $text,
             placeholder: placeholder,
+            autoSizeInputView: autoSize,
             leftView: { leftView },
             rightView: { rightView },
             inputView: view,
@@ -108,11 +115,12 @@ public extension SUITextField where InputView == EmptyView {
 public extension SUITextField where LeftView == EmptyView {
 
     func leftView<Content>(
-        @ViewBuilder _ view: () -> Content
+        @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, InputAccessoryView, Content, RightView> where Content: View {
         SUITextField<InputView, InputAccessoryView, Content, RightView>(
             text: $text,
             placeholder: placeholder,
+            autoSizeInputView: autoSizeInputView,
             leftView: view,
             rightView: { rightView },
             inputView: { inputView },
@@ -125,11 +133,12 @@ public extension SUITextField where LeftView == EmptyView {
 public extension SUITextField where RightView == EmptyView {
 
     func rightView<Content>(
-        @ViewBuilder _ view: () -> Content
+        @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, InputAccessoryView, LeftView, Content> where Content: View {
         SUITextField<InputView, InputAccessoryView, LeftView, Content>(
             text: $text,
             placeholder: placeholder,
+            autoSizeInputView: autoSizeInputView,
             leftView: { leftView },
             rightView: view,
             inputView: { inputView },
@@ -311,6 +320,7 @@ public extension SUITextField {
         private func applyCustomViews(to textField: UITextField) {
             if InputView.self != EmptyView.self {
                 inputViewController = SUIInputViewController<InputView>()
+                inputViewController?.allowSelfSizing = uiKitTextField.autoSizeInputView
                 inputViewController?.controller = .init(rootView: uiKitTextField.inputView)
                 (textField as! _SUITextField).inputViewController = inputViewController
             }
