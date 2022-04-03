@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
-import SUITextField
+import SwiftUITextField
 
 struct ContentView: View {
 
+    enum Responder {
+        case first
+        case second
+        case third
+    }
+
     @State private var toggleFont = false
-    @State private var color = Color.red
     @State private var text = "A test text"
     @ResponderState var focus: Responder?
     @ResponderState var isFocused: Bool
@@ -33,9 +38,7 @@ struct ContentView: View {
                     }
                     .leftView {
                         Button(action: { text = "" }) {
-                            if #available(iOS 14, *) {
-                                Label("\(text.count) chars", systemImage: "trash")
-                            }
+                            Image(systemName: "trash")
                         }
                     }
                     .uiTextFieldTextLeftViewMode(.whileEditing)
@@ -54,9 +57,10 @@ struct ContentView: View {
                     }
                     .onReturnKeyPressed {
                         focus = nil
-                        isFocused = false
                     }
                     .responder($focus, equals: .third)
+                SUITextField(text: $text)
+                    .responder($isFocused)
                 Button(action: { toggleFont.toggle() }) {
                     Text("Change font")
                 }
@@ -135,13 +139,6 @@ struct ContentView: View {
     }
 
 }
-
-enum Responder {
-    case first
-    case second
-    case third
-}
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

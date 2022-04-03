@@ -28,13 +28,15 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     private var leftView: LeftView
     private var rightView: RightView
 
+    private var makeProxy: (UITextField) -> Void = { _ in }
+    private var updateProxy: (UITextField) -> Void = { _ in }
     private var shouldBeginEditingAction: () -> Bool = { true }
     private var shouldEndEditingAction: () -> Bool = { true }
     private var shouldClearAction: () -> Bool = { true }
     private var onBeginEditingAction: () -> Void = {}
     private var onEndEditingAction: (UITextField.DidEndEditingReason) -> Void = { _ in }
     private var onReturnKeyPressedAction: () -> Void = {}
-    private var onSelectionChangedAction: (UITextRange?) -> Void = { _ in }
+    private var onSelectionChangedAction: (UITextField) -> Void = { _ in }
 
     private var shouldChangeCharactersInAction: (_ originString: String,
                                                  _ range: NSRange,
@@ -77,6 +79,27 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
 
 public extension SUITextField where InputAccessoryView == EmptyView {
 
+    /// Attaches an input accessory view to this text field.
+    ///
+    /// When the text field becomes first responder, it shows a view on top
+    /// of the keyboard or bottom of the window if no software keyboard is shown (i.e in iPads).
+    ///
+    /// ```swift
+    /// var body: some View {
+    ///     SUITextField(text: $text)
+    ///         .inputAccessoryView {
+    ///             MyCustomBar()
+    ///         }
+    /// }
+    /// ```
+    ///
+    /// - Note: This api restricts the number of `inputAccessoryView` modifier to 1 (since a text field
+    /// can have 1 and only 1 accessory view at same time). This means that if you try to apply 2 times this modifier
+    /// the compiler will throw an error.
+    ///
+    /// - Parameter view: A `@ViewBuilder` that returns the view to be shown.
+    ///
+    /// - Returns: The modified text field.
     func inputAccessoryView<Content>(
         @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, Content, LeftView, RightView> where Content: View {
@@ -95,6 +118,29 @@ public extension SUITextField where InputAccessoryView == EmptyView {
 
 public extension SUITextField where InputView == EmptyView {
 
+    /// Attaches an input view to this text field.
+    ///
+    /// When the text field becomes first responder, it shows a view instead of the default software keyboard.
+    ///
+    /// ```swift
+    /// var body: some View {
+    ///     SUITextField(text: $text)
+    ///         .inputView(autoSize: true) { // you can omit autoSize, true by default
+    ///             MyCustomKeyboard()
+    ///         }
+    /// }
+    /// ```
+    ///
+    /// - Note: This api restricts the number of `inputView` modifier to 1 (since a text field
+    /// can have 1 and only 1 input view at same time). This means that if you try to apply 2 times this modifier
+    /// the compiler will throw an error.
+    ///
+    /// - Parameter autoSize: When `true`, the size of the container of the view is sized according to the view size itself.
+    /// When `false`, the size of the container is decided by the system (it is usually the default keyboard container size). Default is `true`.
+    ///
+    /// - Parameter view: A `@ViewBuilder` that returns the view to be shown.
+    ///
+    /// - Returns: The modified text field.
     func inputView<Content>(
         autoSize: Bool = true,
         @ViewBuilder view: () -> Content
@@ -114,6 +160,30 @@ public extension SUITextField where InputView == EmptyView {
 
 public extension SUITextField where LeftView == EmptyView {
 
+    /// Attaches a left view to this text field.
+    ///
+    /// This example insert a left view into the text field that allows the user to clear all text.
+    ///
+    /// ```swift
+    /// var body: some View {
+    ///     SUITextField(text: $text)
+    ///         .leftView {
+    ///             Button(action: { text = "" }) {
+    ///                 Image(systemName: "trash")
+    ///             }
+    ///         }
+    ///         .uiTextFieldTextLeftViewMode(.whileEditing)
+    /// }
+    /// ```
+    /// - Important: `uiTextFieldTextLeftViewMode` should not be set to `.never` to show the view.
+    ///
+    /// - Note: This api restricts the number of `leftView` modifier to 1 (since a text field
+    /// can have 1 and only 1 left view at same time). This means that if you try to apply 2 times this modifier
+    /// the compiler will throw an error.
+    ///
+    /// - Parameter view: A `@ViewBuilder` that returns the view to be shown.
+    ///
+    /// - Returns: The modified text field.
     func leftView<Content>(
         @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, InputAccessoryView, Content, RightView> where Content: View {
@@ -132,6 +202,30 @@ public extension SUITextField where LeftView == EmptyView {
 
 public extension SUITextField where RightView == EmptyView {
 
+    /// Attaches a right view to this text field.
+    ///
+    /// This example insert a right view into the text field that allows the user to clear all text.
+    ///
+    /// ```swift
+    /// var body: some View {
+    ///     SUITextField(text: $text)
+    ///         .rightView {
+    ///             Button(action: { text = "" }) {
+    ///                 Image(systemName: "trash")
+    ///             }
+    ///         }
+    ///         .uiTextFieldTextRightViewMode(.whileEditing)
+    /// }
+    /// ```
+    /// - Important: `uiTextFieldTextRightViewMode` should not be set to `.never` to show the view.
+    ///
+    /// - Note: This api restricts the number of `rightView` modifier to 1 (since a text field
+    /// can have 1 and only 1 right view at same time). This means that if you try to apply 2 times this modifier
+    /// the compiler will throw an error.
+    ///
+    /// - Parameter view: A `@ViewBuilder` that returns the view to be shown.
+    ///
+    /// - Returns: The modified text field.
     func rightView<Content>(
         @ViewBuilder view: () -> Content
     ) -> SUITextField<InputView, InputAccessoryView, LeftView, Content> where Content: View {
@@ -156,31 +250,102 @@ public extension SUITextField {
         return view
     }
 
+    /// Called when the underlying `UITextField` has been created.
+    ///
+    /// You can use this proxy to apply all changes you need when the text field is created.
+    ///
+    /// - Parameter action: A block executed after the text field is created.
+    /// - Returns: The modified text field.
+    func onCreate(_ action: @escaping (UITextField) -> Void) -> Self {
+        apply(value: action, to: \.makeProxy)
+    }
+
+    /// Called every time the underlying `UITextField` needs to update its values.
+    ///
+    /// You can use this proxy to apply all changes you need when a state has changed.
+    ///
+    /// - Important: Since this function is called during a state update, you should be sure
+    /// to avoid creating loops for instance by using `DispatchQueue.main.async`.
+    ///
+    /// - Parameter action: A block executed after the text field is created.
+    /// - Returns: The modified text field.
+    func onUpdate(_ action: @escaping (UITextField) -> Void) -> Self {
+        apply(value: action, to: \.updateProxy)
+    }
+
+    /// Called when the text field is about to start editing.
+    ///
+    /// Returning `false` doesn't allow the text field to start editing.
+    ///
+    /// - Parameter action: A block that is executed before the text field become first responder.
+    /// You return `true`/`false` to tell the text field if it can become or not the first responder.
+    ///
+    /// - Returns: The modified text field.
     func shouldBeginEditingAction(_ action: @escaping () -> Bool) -> Self {
         apply(value: action, to: \.shouldBeginEditingAction)
     }
 
+    /// Called when the text field is about to end editing.
+    ///
+    /// Returning `false` doesn't allow the text field to end editing.
+    ///
+    /// - Parameter action: A block that is executed before the text field resign first responder.
+    /// You return `true`/`false` to tell the text field if it can resign or not the first responder.
+    ///
+    /// - Returns: The modified text field.
     func shouldEndEditingAction(_ action: @escaping () -> Bool) -> Self {
         apply(value: action, to: \.shouldEndEditingAction)
     }
 
+    /// Called when the text field is about to clear its text content.
+    ///
+    /// Returning `false` doesn't allow the text field to clear the content.
+    ///
+    /// - Parameter action: A block that is executed before the text field clears its content.
+    /// You return `true`/`false` to tell the text field if it can clear or not the content.
+    ///
+    /// - Returns: The modified text field.
     func shouldClearAction(_ action: @escaping () -> Bool) -> Self {
         apply(value: action, to: \.shouldClearAction)
     }
 
+    /// Called when the text field become first responder.
+    ///
+    /// - Parameter action: A block that is executed after the text field become first responder.
+    ///
+    /// - Returns: The modified text field.
     func onBeginEditing(_ action: @escaping () -> Void) -> Self {
         apply(value: action, to: \.onBeginEditingAction)
     }
 
+    /// Called when the text field resign first responder.
+    ///
+    /// - Parameter action: A block that is executed after the text field resign first responder.
+    ///
+    /// - Returns: The modified text field.
     func onEndEditing(_ action: @escaping (UITextField.DidEndEditingReason) -> Void) -> Self {
         apply(value: action, to: \.onEndEditingAction)
     }
 
+    /// Called when the return key is pressed.
+    ///
+    /// - Parameter action: A block that is executed when the return key is pressed.
+    ///
+    /// - Returns: The modified text field.
     func onReturnKeyPressed(_ action: @escaping () -> Void) -> Self {
         apply(value: action, to: \.onReturnKeyPressedAction)
     }
 
-    func onSelectionChanged(_ action: @escaping (UITextRange?) -> Void) -> Self {
+    /// Called when the selected text into the text field is changed.
+    ///
+    /// - Parameter action: A block that is executed when the selected text is changed.
+    /// The block provides you the underlying `UITextField` so you can inspect it.
+    ///
+    /// - Important: Although the block gives you the underlying `UITextField`, you shouldn't directly mutate it.
+    /// You should use only to **get** information you need.
+    ///
+    /// - Returns: The modified text field.
+    func onSelectionChanged(_ action: @escaping (UITextField) -> Void) -> Self {
         apply(value: action, to: \.onSelectionChangedAction)
     }
 
@@ -254,6 +419,8 @@ public extension SUITextField {
                 })
         }
 
+        makeProxy(textField)
+
         return textField
     }
 
@@ -286,6 +453,8 @@ public extension SUITextField {
             context.coordinator.leftView?.rootView = leftView
             context.coordinator.rightView?.rootView = rightView
         }
+
+        updateProxy(uiView)
     }
 
     static func dismantleUIView(_ uiView: UITextField, coordinator: Coordinator) {
@@ -376,7 +545,7 @@ public extension SUITextField {
         }
 
         public func textFieldDidChangeSelection(_ textField: UITextField) {
-            uiKitTextField.onSelectionChangedAction(textField.selectedTextRange)
+            uiKitTextField.onSelectionChangedAction(textField)
         }
 
     }

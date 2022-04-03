@@ -33,7 +33,7 @@ class _SUITextField: UITextField {
 /// either an input view or an input accessory view.
 class SUIInputViewController<Content>: UIInputViewController where Content: View {
 
-    var controller: HC<Content>?
+    var controller: UIHostingController<Content>?
 
     var rootView: Content? {
         get { controller?.rootView }
@@ -44,12 +44,14 @@ class SUIInputViewController<Content>: UIInputViewController where Content: View
         }
     }
 
+    var allowSelfSizing = true
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let view = view as! UIInputView
-        view.allowsSelfSizing = true
-        
+        view.allowsSelfSizing = allowSelfSizing
+
         view.translatesAutoresizingMaskIntoConstraints = false
 
         guard let controller = controller else { return }
@@ -76,30 +78,6 @@ class SUIInputViewController<Content>: UIInputViewController where Content: View
         view.invalidateIntrinsicContentSize()
         view.setNeedsLayout()
         view.layoutIfNeeded()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        print("did layout \(self)")
-    }
-
-    deinit {
-        print("deinit \(self)")
-    }
-
-}
-
-class HC<Content>: UIHostingController<Content> where Content: View {
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        print("did layout \(self)")
-    }
-
-    deinit {
-        print("deinit \(self)")
     }
 
 }

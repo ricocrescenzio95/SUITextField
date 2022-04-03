@@ -139,6 +139,38 @@ extension EnvironmentValues {
 
 public extension View {
 
+    /// Sets the default `UIFont` for ``SUITextField`` in this view.
+    ///
+    /// Use `uiTextFieldFont(_:)` to apply a specific font to all of the ``SUITextField`` in a view.
+    ///
+    /// The example below shows the effects of applying fonts to individual
+    /// views and to view hierarchies. Font information flows down the view
+    /// hierarchy as part of the environment, and remains in effect unless
+    /// overridden at the level of an individual view or view container.
+    ///
+    /// Here, the outermost `VStack` applies a 16-point system font as a
+    /// default font to text fields contained in that `VStack`. Inside that stack,
+    /// the example applies a 20-point bold system font to just the first text
+    /// field; this explicitly overrides the default. The remaining stack and the
+    /// views contained with it continue to use the 16-point system font set by
+    /// their containing view:
+    ///
+    /// ```swift
+    /// VStack {
+    ///     SUITextField(text: $text, placeholder: "this text field has 20-point bold system font")
+    ///         .uiTextFieldFont(.systemFont(ofSize: 20, weight: .bold))
+    ///
+    ///     VStack {
+    ///         SUITextField(text: $text, placeholder: "this two text fields")
+    ///         SUITextField(text: $text, placeholder: "have same font applied from modifier")
+    ///     }
+    /// }
+    /// .uiTextFieldFont(.systemFont(ofSize: 16, weight: .light))
+    /// ```
+    ///
+    /// - Parameter uiFont: The default font to use in this view.
+    ///
+    /// - Returns: A view with the default font set to the value you supply.
     func uiTextFieldFont(_ uiFont: UIFont?) -> some View {
         environment(\.uiFont, uiFont)
     }

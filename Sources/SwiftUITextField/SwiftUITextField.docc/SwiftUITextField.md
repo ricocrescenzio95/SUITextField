@@ -1,4 +1,4 @@
-# SUITextField
+# ``SwiftUITextField``
 
 A `SwiftUI` wrapper of `UITextField` that allows more customization and programmatic navigation between responders.
 
