@@ -55,6 +55,14 @@ private struct UITextFieldTextAlignmentEnvironmentKey: EnvironmentKey {
     static let defaultValue: NSTextAlignment = .left
 }
 
+private struct UITextFieldLeftViewModeEnvironmentKey: EnvironmentKey {
+    static let defaultValue: UITextField.ViewMode = .never
+}
+
+private struct UITextFieldRightViewModeEnvironmentKey: EnvironmentKey {
+    static let defaultValue: UITextField.ViewMode = .never
+}
+
 extension EnvironmentValues {
 
     var responderValue: AnyHashable? {
@@ -117,6 +125,16 @@ extension EnvironmentValues {
         set { self[UITextFieldTextAlignmentEnvironmentKey.self] = newValue }
     }
 
+    var uiTextFieldTextLeftViewMode: UITextField.ViewMode {
+        get { self[UITextFieldLeftViewModeEnvironmentKey.self] }
+        set { self[UITextFieldLeftViewModeEnvironmentKey.self] = newValue }
+    }
+
+    var uiTextFieldTextRightViewMode: UITextField.ViewMode {
+        get { self[UITextFieldRightViewModeEnvironmentKey.self] }
+        set { self[UITextFieldRightViewModeEnvironmentKey.self] = newValue }
+    }
+
 }
 
 public extension View {
@@ -159,6 +177,14 @@ public extension View {
 
     func uiTextFieldTextAlignment(_ uiTextFieldTextAlignment: NSTextAlignment) -> some View {
         environment(\.uiTextFieldTextAlignment, uiTextFieldTextAlignment)
+    }
+
+    func uiTextFieldTextLeftViewMode(_ uiTextFieldTextLeftViewMode: UITextField.ViewMode) -> some View {
+        environment(\.uiTextFieldTextLeftViewMode, uiTextFieldTextLeftViewMode)
+    }
+
+    func uiTextFieldTextRightViewMode(_ uiTextFieldTextRightViewMode: UITextField.ViewMode) -> some View {
+        environment(\.uiTextFieldTextRightViewMode, uiTextFieldTextRightViewMode)
     }
 
 }

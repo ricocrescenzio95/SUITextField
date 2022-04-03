@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftUITextField
+import SUITextField
 
 struct ContentView: View {
 
@@ -31,6 +31,14 @@ struct ContentView: View {
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                     }
+                    .leftView {
+                        Button(action: { text = "" }) {
+                            if #available(iOS 14, *) {
+                                Label("\(text.count) chars", systemImage: "trash")
+                            }
+                        }
+                    }
+                    .uiTextFieldTextLeftViewMode(.whileEditing)
                     .responder($focus, equals: .first)
                 SUITextField(text: $text)
                     .inputAccessoryView {
@@ -48,7 +56,7 @@ struct ContentView: View {
                         focus = nil
                         isFocused = false
                     }
-                    .responder($isFocused)
+                    .responder($focus, equals: .third)
                 Button(action: { toggleFont.toggle() }) {
                     Text("Change font")
                 }
@@ -73,7 +81,7 @@ struct ContentView: View {
                     Text(">")
                         .frame(width: 30, height: 30)
                 }
-                .disabled(focus == .second)
+                .disabled(focus == .third)
                 Spacer()
                 Text(text)
                 Spacer()
@@ -92,32 +100,38 @@ struct ContentView: View {
     }
 
     func goNext() {
-        focus = .second
+        if focus == .first {
+            focus = .second
+        } else if focus == .second {
+            focus = .third
+        }
     }
 
     func goPrevious() {
-        focus = .first
+        if focus == .third {
+            focus = .second
+        } else if focus == .second {
+            focus = .first
+        }
     }
 
     @ViewBuilder
     var keyPadInputView: some View {
-        if #available(iOS 14, *) {
-            VStack {
-                ForEach(1...3, id: \.self) { row in
-                    HStack {
-                        ForEach(1...3, id: \.self) { col in
-                            Button {
-                                text += (row * col).description
-                            } label: {
-                                Text((row * col).description).frame(width: 30, height: 30)
-                            }
-
+        VStack {
+            ForEach(1...3, id: \.self) { row in
+                HStack {
+                    ForEach(1...3, id: \.self) { col in
+                        Button {
+                            text += (row * col).description
+                        } label: {
+                            Text((row * col).description).frame(width: 30, height: 30)
                         }
+
                     }
                 }
             }
-            .padding()
         }
+        .padding()
     }
 
 }
@@ -125,6 +139,7 @@ struct ContentView: View {
 enum Responder {
     case first
     case second
+    case third
 }
 
 

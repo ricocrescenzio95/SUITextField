@@ -74,7 +74,7 @@ public extension View {
     /// }
     /// ```
     ///
-    /// To control focus using a Boolean, use the ``View/responder(_:)`` method
+    /// To control focus using a Boolean, use the `View/responder(_:)` method
     /// instead.
     ///
     /// - Parameters:
@@ -130,7 +130,7 @@ public extension View {
     /// ```
     ///
     /// To control focus by matching a value, use the
-    /// ``View/responder(_:equals:)`` method instead.
+    /// `View/responder(_:equals:)` method instead.
     ///
     /// - Parameter condition: The responder state to bind. When text field becomes
     ///   first responder, the binding sets the bound value to `true`. If a caller

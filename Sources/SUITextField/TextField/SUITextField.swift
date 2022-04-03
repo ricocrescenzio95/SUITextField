@@ -1,8 +1,22 @@
+//
+//  SUITextField.swift
+//
+//
+//  Created by Rico Crescenzio on 31/03/22.
+//
+
 import SwiftUI
 import UIKit
 import Combine
 
-public struct SUITextField<InputView, InputAccessoryView>: UIViewRepresentable where InputView: View, InputAccessoryView: View {
+/// A `SwiftUI` wrapper of `UITextField` that enable more control and customization.
+///
+/// For example this text field allows to set an input view or an input accessory view. Also it allows to set
+/// a left view and a right view like any other `UITextField`.
+///
+/// By using ``ResponderState``, you can enable responder navigation through states.
+public struct SUITextField<InputView, InputAccessoryView, LeftView, RightView>: UIViewRepresentable
+where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View {
 
     // MARK: - Properties
 
@@ -10,6 +24,8 @@ public struct SUITextField<InputView, InputAccessoryView>: UIViewRepresentable w
     private var placeholder: String?
     private var inputView: InputView
     private var inputAccessoryView: InputAccessoryView
+    private var leftView: LeftView
+    private var rightView: RightView
 
     private var shouldBeginEditingAction: () -> Bool = { true }
     private var shouldEndEditingAction: () -> Bool = { true }
@@ -25,31 +41,30 @@ public struct SUITextField<InputView, InputAccessoryView>: UIViewRepresentable w
 
     // MARK: - Initializers
 
-    public init(text: Binding<String>, placeholder: String? = nil) where InputView == EmptyView, InputAccessoryView == EmptyView {
+    public init(text: Binding<String>, placeholder: String? = nil)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self._text = text
         self.placeholder = placeholder
         inputView = EmptyView()
         inputAccessoryView = EmptyView()
+        leftView = EmptyView()
+        rightView = EmptyView()
     }
 
     init(
         text: Binding<String>,
         placeholder: String? = nil,
+        @ViewBuilder leftView: () -> LeftView,
+        @ViewBuilder rightView: () -> RightView,
         @ViewBuilder inputView: () -> InputView,
         @ViewBuilder inputAccessoryView: () -> InputAccessoryView
     ) {
         self._text = text
         self.placeholder = placeholder
+        self.leftView = leftView()
+        self.rightView = rightView()
         self.inputView = inputView()
         self.inputAccessoryView = inputAccessoryView()
-    }
-
-    // MARK: - Private methods
-
-    private func apply<T>(value: T, to path: WritableKeyPath<Self, T>) -> Self {
-        var view = self
-        view[keyPath: path] = value
-        return view
     }
 
 }
@@ -60,11 +75,15 @@ public extension SUITextField where InputAccessoryView == EmptyView {
 
     func inputAccessoryView<Content>(
         @ViewBuilder _ view: () -> Content
-    ) -> SUITextField<InputView, Content> where Content: View {
-        SUITextField<InputView, Content>(text: $text,
-                                         placeholder: placeholder,
-                                         inputView: { inputView },
-                                         inputAccessoryView: view)
+    ) -> SUITextField<InputView, Content, LeftView, RightView> where Content: View {
+        SUITextField<InputView, Content, LeftView, RightView>(
+            text: $text,
+            placeholder: placeholder,
+            leftView: { leftView },
+            rightView: { rightView },
+            inputView: { inputView },
+            inputAccessoryView: view
+        )
     }
 
 }
@@ -73,10 +92,12 @@ public extension SUITextField where InputView == EmptyView {
 
     func inputView<Content>(
         @ViewBuilder _ view: () -> Content
-    ) -> SUITextField<Content, InputAccessoryView> where Content: View {
-        SUITextField<Content, InputAccessoryView>(
+    ) -> SUITextField<Content, InputAccessoryView, LeftView, RightView> where Content: View {
+        SUITextField<Content, InputAccessoryView, LeftView, RightView>(
             text: $text,
             placeholder: placeholder,
+            leftView: { leftView },
+            rightView: { rightView },
             inputView: view,
             inputAccessoryView: { inputAccessoryView }
         )
@@ -84,7 +105,47 @@ public extension SUITextField where InputView == EmptyView {
 
 }
 
+public extension SUITextField where LeftView == EmptyView {
+
+    func leftView<Content>(
+        @ViewBuilder _ view: () -> Content
+    ) -> SUITextField<InputView, InputAccessoryView, Content, RightView> where Content: View {
+        SUITextField<InputView, InputAccessoryView, Content, RightView>(
+            text: $text,
+            placeholder: placeholder,
+            leftView: view,
+            rightView: { rightView },
+            inputView: { inputView },
+            inputAccessoryView: { inputAccessoryView }
+        )
+    }
+
+}
+
+public extension SUITextField where RightView == EmptyView {
+
+    func rightView<Content>(
+        @ViewBuilder _ view: () -> Content
+    ) -> SUITextField<InputView, InputAccessoryView, LeftView, Content> where Content: View {
+        SUITextField<InputView, InputAccessoryView, LeftView, Content>(
+            text: $text,
+            placeholder: placeholder,
+            leftView: { leftView },
+            rightView: view,
+            inputView: { inputView },
+            inputAccessoryView: { inputAccessoryView }
+        )
+    }
+
+}
+
 public extension SUITextField {
+
+    private func apply<T>(value: T, to path: WritableKeyPath<Self, T>) -> Self {
+        var view = self
+        view[keyPath: path] = value
+        return view
+    }
 
     func shouldBeginEditingAction(_ action: @escaping () -> Bool) -> Self {
         apply(value: action, to: \.shouldBeginEditingAction)
@@ -136,12 +197,24 @@ public extension SUITextField {
 
         textField.addTarget(
             context.coordinator,
-            action: #selector(UIKitTextFieldCoordinator.editingChanged),
+            action: #selector(Coordinator.editingChanged),
             for: .editingChanged
         )
 
         context.coordinator.responderStorage = context.environment.responderStorage
         context.coordinator.responderValue = context.environment.responderValue
+
+        if LeftView.self != EmptyView.self {
+            context.coordinator.leftView = .init(rootView: leftView)
+            context.coordinator.leftView?.view.backgroundColor = .clear
+            textField.leftView = context.coordinator.leftView?.view
+        }
+
+        if RightView.self != EmptyView.self {
+            context.coordinator.rightView = .init(rootView: rightView)
+            context.coordinator.rightView?.view.backgroundColor = .clear
+            textField.rightView = context.coordinator.rightView?.view
+        }
 
         guard let value = context.environment.responderValue else {
             context.coordinator.cancellable = nil
@@ -193,25 +266,34 @@ public extension SUITextField {
         applyIfDifferent(value: context.environment.uiTextFieldTextContentMode, at: \.textContentType)
         applyIfDifferent(value: context.environment.uiTextFieldKeyboardType, at: \.keyboardType)
         applyIfDifferent(value: context.environment.uiTextFieldTextAlignment, at: \.textAlignment)
+        applyIfDifferent(value: context.environment.uiTextFieldTextLeftViewMode, at: \.leftViewMode)
+        applyIfDifferent(value: context.environment.uiTextFieldTextRightViewMode, at: \.rightViewMode)
         applyIfDifferent(value: context.environment.isEnabled, at: \.isEnabled)
 
-        context.coordinator.inputViewController?.controller?.rootView = inputView
-        context.coordinator.inputAccessoryViewController?.controller?.rootView = inputAccessoryView
+        DispatchQueue.main.async {
+            context.coordinator.inputViewController?.rootView = inputView
+            context.coordinator.inputAccessoryViewController?.rootView = inputAccessoryView
+
+            context.coordinator.leftView?.rootView = leftView
+            context.coordinator.rightView?.rootView = rightView
+        }
     }
 
-    static func dismantleUIView(_ uiView: UITextField, coordinator: UIKitTextFieldCoordinator) {
+    static func dismantleUIView(_ uiView: UITextField, coordinator: Coordinator) {
         uiView.resignFirstResponder()
     }
 
-    func makeCoordinator() -> UIKitTextFieldCoordinator { UIKitTextFieldCoordinator(self) }
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
 
-    // MARK: - UIKitTextFieldCoordinator
+    // MARK: - Coordinator
 
-    final class UIKitTextFieldCoordinator: NSObject, UITextFieldDelegate {
+    final class Coordinator: NSObject, UITextFieldDelegate {
 
         private let uiKitTextField: SUITextField
         var inputViewController: SUIInputViewController<InputView>?
         var inputAccessoryViewController: SUIInputViewController<InputAccessoryView>?
+        var leftView: UIHostingController<LeftView>?
+        var rightView: UIHostingController<RightView>?
         var responderValue: AnyHashable?
         weak var responderStorage: ResponderStorage?
         var cancellable: AnyCancellable?
@@ -230,7 +312,6 @@ public extension SUITextField {
             if InputView.self != EmptyView.self {
                 inputViewController = SUIInputViewController<InputView>()
                 inputViewController?.controller = .init(rootView: uiKitTextField.inputView)
-                (inputViewController?.view as? UIInputView)?.allowsSelfSizing = true
                 (textField as! _SUITextField).inputViewController = inputViewController
             }
             if InputAccessoryView.self != EmptyView.self {
@@ -238,6 +319,13 @@ public extension SUITextField {
                 inputAccessoryViewController?.controller = .init(rootView: uiKitTextField.inputAccessoryView)
                 (textField as! _SUITextField).inputAccessoryViewController = inputAccessoryViewController
             }
+        }
+
+        private func removeCustomViews(to textField: UITextField) {
+            (textField as! _SUITextField).inputViewController = nil
+            (textField as! _SUITextField).inputAccessoryViewController = nil
+            inputViewController = nil
+            inputAccessoryViewController = nil
         }
 
         // MARK: - UITextFieldDelegate
@@ -253,8 +341,6 @@ public extension SUITextField {
         }
 
         public func textFieldDidBeginEditing(_ textField: UITextField) {
-            (textField as! _SUITextField).inputViewController = nil
-            (textField as! _SUITextField).inputAccessoryViewController = nil
             applyCustomViews(to: textField)
             if responderStorage?.erasedValue != responderValue {
                 responderStorage?.erasedValue = responderValue
@@ -263,6 +349,7 @@ public extension SUITextField {
         }
 
         public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+            removeCustomViews(to: textField)
             if responderStorage?.erasedValue == responderValue {
                 if let responderStorage = responderStorage as? BoolResponderStorage {
                     responderStorage.value = false
