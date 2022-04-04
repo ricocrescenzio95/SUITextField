@@ -8,21 +8,9 @@
 import SwiftUI
 import SwiftUITextField
 
-struct Main: View {
-
-    @State private var isShown = true
-
-    var body: some View {
-        if isShown {
-            ContentView()
-        }
-    }
-
-}
-
 struct ContentView: View {
 
-    enum Responder {
+    enum Responder: Hashable {
         case first
         case second
         case third
@@ -114,7 +102,6 @@ struct ContentView: View {
             .padding(.vertical, 8)
         }
         .frame(maxWidth: .infinity)
-        .background(.regularMaterial)
     }
 
     func goNext() {

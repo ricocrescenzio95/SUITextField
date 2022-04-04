@@ -254,6 +254,10 @@ public extension SUITextField {
     ///
     /// You can use this proxy to apply all changes you need when the text field is created.
     ///
+    /// - Important: You should use this modifier to customize the underlying `UITextField` only
+    /// if there's no `SUITextField` modifier for your purpose. Avoid customizing everything in this
+    /// proxy method.
+    ///
     /// - Parameter action: A block executed after the text field is created.
     /// - Returns: The modified text field.
     func onCreate(_ action: @escaping (UITextField) -> Void) -> Self {

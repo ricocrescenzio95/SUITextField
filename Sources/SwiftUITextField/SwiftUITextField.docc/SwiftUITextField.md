@@ -2,7 +2,7 @@
 
 A `SwiftUI` wrapper of `UITextField` that allows more customization and programmatic navigation between responders.
 
-![A sloth hanging off a tree.](logo)
+![Library logo](logo)
 
 `SwiftUI` `TextField` (especially on iOS 14 and below) misses lot of APIs.
 
@@ -13,6 +13,58 @@ You can also use all the `UITextFieldDelegate` methods, all exposed as `SwiftUI`
 
 All these additional customization are passed as `SwiftUI` views/modifiers, allowing to use its lovely declarative API! 🎉
 
+```swift
+struct ContentView: View {
+
+    enum Responder: Hashable {
+        case first
+        case second
+    }
+
+    @State private var text = "A test text"
+    @ResponderState var focus: Responder?
+    @State private var date = Date()
+
+    var body: some View {
+        ScrollView {
+            VStack {
+                SUITextField(text: $text, placeholder: "Insert a text...")
+                    .inputAccessoryView {
+                        MyAccessoryView() // add an accessory view 
+                    }
+                    .onReturnKeyPressed {
+                        focus = nil // set focus to nil to close keyboard on return key tap
+                    }
+                    .leftView { // add a left view to clear text on tap
+                        Button(action: { text = "" }) {
+                            Image(systemName: "trash")
+                        }
+                        .padding(.horizontal, 2)
+                    }
+                    .responder($focus, equals: .first)
+                    .uiTextFieldTextLeftViewMode(.whileEditing)
+                SUITextField(text: .constant(date.description))
+                    .inputAccessoryView {
+                        MyAccessoryView()
+                    }
+                    .inputView {
+                        // Use a date picker as input view!
+                        DatePicker("Select date", selection: $date)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .datePickerStyle(.wheel)
+                            .labelsHidden()
+                    }
+                    .responder($focus, equals: .second)
+            }
+            .padding()
+        }
+        // apply style to all children text field!
+        .uiTextFieldBorderStyle(.roundedRect)
+    }
+
+    // more code...
+```
+
 ## Topics
 
 ### Essentials
@@ -22,5 +74,4 @@ All these additional customization are passed as `SwiftUI` views/modifiers, allo
 ### Handling Responder Chain
 
 - ``ResponderState``
-
-
+- ``ResponderChainCoordinator``
