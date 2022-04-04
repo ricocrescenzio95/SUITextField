@@ -5,6 +5,7 @@
 //  Created by Rico Crescenzio on 02/04/22.
 //
 
+import Combine
 import SwiftUI
 
 /// Internal class that allows to edit the `inputViewController` and `inputAccessoryViewController`.
@@ -34,6 +35,7 @@ class _SUITextField: UITextField {
 class SUIInputViewController<Content>: UIInputViewController where Content: View {
 
     var controller: UIHostingController<Content>?
+    private var cancellable: AnyCancellable?
 
     var rootView: Content? {
         get { controller?.rootView }
@@ -70,13 +72,24 @@ class SUIInputViewController<Content>: UIInputViewController where Content: View
         ])
 
         controller.didMove(toParent: self)
+
+        cancellable = NotificationCenter.default.publisher(for: UIResponder.keyboardDidChangeFrameNotification)
+            .sink { [weak self] _ in
+                self?.layoutContent()
+            }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate { [weak self] _ in
+            self?.layoutContent()
+        }
     }
 
     private func layoutContent() {
-        view.bounds.size = controller?.sizeThatFits(in: UIView.layoutFittingCompressedSize) ?? .zero
         controller?.view.invalidateIntrinsicContentSize()
         view.invalidateIntrinsicContentSize()
-        view.setNeedsLayout()
         view.layoutIfNeeded()
     }
 
