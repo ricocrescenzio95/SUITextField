@@ -24,10 +24,9 @@
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#related">Related</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#documentation">Documentation</a> •
   <a href="#license">License</a>
   <br><br><br>
   <img src="readme-res/main-example.gif">
@@ -41,7 +40,21 @@
 * Programmatic navigation similar to iOS 15 `FocusState`
 * DocC documented!
 
-## In short...
+## Installation
+
+`SUITextField` can be installed using Swift Package Manager.
+
+1. In Xcode open **File/Swift Packages/Add Package Dependency...** menu.
+
+2. Copy and paste the package URL:
+
+```
+https://github.com/ricocrescenzio95/SUITextField
+```
+
+For more details refer to [Adding Package Dependencies to Your App](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app) documentation.
+
+## Usage
 
 Just use it as you would use any other `SwiftUI` view!
 
