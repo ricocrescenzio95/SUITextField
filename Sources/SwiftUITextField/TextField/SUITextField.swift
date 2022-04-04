@@ -405,7 +405,7 @@ public extension SUITextField {
                 uiView[keyPath: keyPath] = value
             }
         }
-        applyIfDifferent(value: text, at: \.text)
+        uiView.text = text
         applyIfDifferent(value: placeholder, at: \.placeholder)
         applyIfDifferent(value: context.environment.uiFont, at: \.font)
         applyIfDifferent(value: context.environment.uiReturnKeyType, at: \.returnKeyType)
