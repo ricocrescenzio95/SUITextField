@@ -101,6 +101,8 @@ struct ContentView: View {
 
 Use Apple `DocC` generated documentation, from Xcode, `Product > Build Documentation`.
 
+<img src="readme-res/docc.png" width="500"/>
+
 ## Known Issues
 
 - When an external keyboard is connected and the software keyboard is hidden, 
