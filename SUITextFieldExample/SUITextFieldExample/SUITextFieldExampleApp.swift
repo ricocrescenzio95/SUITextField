@@ -12,7 +12,7 @@ import SwiftUI
 struct SUITextFieldExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            Main()
+            ContentView()
         }
     }
 }

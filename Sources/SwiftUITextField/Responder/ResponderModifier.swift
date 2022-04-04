@@ -13,7 +13,7 @@ public extension SUITextField {
     ///
     /// Use this modifier to cause the ``SUITextField`` to become first responder when
     /// the `binding` equals the `value`. Typically, you create an enumeration
-    /// of fields that may receive focus, bind an instance of this enumeration,
+    /// of fields that may become first responder, bind an instance of this enumeration,
     /// and assign its cases to responder views.
     ///
     /// The following example uses the cases of a `LoginForm` enumeration to
@@ -55,7 +55,7 @@ public extension SUITextField {
     /// }
     /// ```
     ///
-    /// To control focus using a Boolean, use the `View/responder(_:)` method
+    /// To control responder using a Boolean, use the ``responder(_:)`` method
     /// instead.
     ///
     /// - Parameters:
@@ -80,14 +80,13 @@ public extension SUITextField {
     ///
     /// Use this modifier to cause the ``SwiftUITextField/SUITextField`` to become first responder
     /// whenever the the `condition` value is `true`. You can use this modifier to
-    /// observe the responder state of a single view, or programmatically set and
-    /// remove focus from the view.
+    /// observe the responder state of a single view, or programmatically become/resign first responder.
     ///
     /// In the following example, a single ``SwiftUITextField/SUITextField`` accepts a user's
-    /// desired `username`. The text field binds its focus state to the
+    /// desired `username`. The text field binds its responder state to the
     /// Boolean value `usernameFieldIsFocused`. A "Submit" button's action
     /// verifies whether the name is available. If the name is unavailable, the
-    /// button sets `usernameFieldIsFocused` to `true`, which causes focus to
+    /// button sets `usernameFieldIsFocused` to `true`, which causes responder to
     /// return to the text field, so the user can enter a different name.
     ///
     /// ```swift
@@ -113,8 +112,8 @@ public extension SUITextField {
     /// }
     /// ```
     ///
-    /// To control focus by matching a value, use the
-    /// `View/responder(_:equals:)` method instead.
+    /// To control responder by matching a value, use the
+    /// ``responder(_:equals:)`` method instead.
     ///
     /// - Parameter condition: The responder state to bind. When text field becomes
     ///   first responder, the binding sets the bound value to `true`. If a caller
