@@ -13,9 +13,6 @@ struct Main: View {
     @State private var isShown = true
 
     var body: some View {
-        Button(action: { isShown.toggle() }) {
-            Text(isShown ? "Hide" : "Show")
-        }
         if isShown {
             ContentView()
         }
@@ -40,21 +37,27 @@ struct ContentView: View {
 
     var body: some View {
         ScrollView {
+            Text("SUITextField")
+                .font(.headline)
+                .padding(.top)
+            Image("logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 100)
+                .padding(.vertical, 50)
             VStack {
-                SUITextField(text: .constant(date.description))
+                SUITextField(text: $text)
                     .inputAccessoryView {
                         accessoryView
                     }
-                    .inputView {
-                        DatePicker("Select date", selection: $date)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .datePickerStyle(.wheel)
-                            .labelsHidden()
+                    .onReturnKeyPressed {
+                        focus = nil
                     }
                     .leftView {
                         Button(action: { text = "" }) {
                             Image(systemName: "trash")
                         }
+                        .padding(.horizontal, 2)
                     }
                     .responder($focus, equals: .first)
                     .uiTextFieldTextLeftViewMode(.whileEditing)
@@ -66,25 +69,20 @@ struct ContentView: View {
                         keyPadInputView
                     }
                     .responder($focus, equals: .second)
-                TextField.init("v15 test", text: $text)
-                SUITextField(text: $text)
+                SUITextField(text: .constant(date.description))
                     .inputAccessoryView {
                         accessoryView
                     }
-                    .onReturnKeyPressed {
-                        focus = nil
+                    .inputView {
+                        DatePicker("Select date", selection: $date)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .datePickerStyle(.wheel)
+                            .labelsHidden()
                     }
                     .responder($focus, equals: .third)
-                SUITextField(text: $text)
-                    .responder($isFocused)
-                Button(action: { toggleFont.toggle() }) {
-                    Text("Change font")
-                }
-                accessoryView
             }
             .padding()
         }
-        .background(Color.yellow.edgesIgnoringSafeArea(.all))
         .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
         .uiTextFieldBorderStyle(.roundedRect)
     }
@@ -116,7 +114,7 @@ struct ContentView: View {
             .padding(.vertical, 8)
         }
         .frame(maxWidth: .infinity)
-        .background(Color.green.edgesIgnoringSafeArea(.horizontal))
+        .background(.regularMaterial)
     }
 
     func goNext() {
@@ -138,15 +136,14 @@ struct ContentView: View {
     @ViewBuilder
     var keyPadInputView: some View {
         VStack {
-            ForEach(1...3, id: \.self) { row in
+            ForEach(0...2, id: \.self) { row in
                 HStack {
                     ForEach(1...3, id: \.self) { col in
                         Button {
-                            text += (row * col).description
+                            text += (col + (row * 3)).description
                         } label: {
-                            Text((row * col).description).frame(width: 30, height: 30)
+                            Text((col + (row * 3)).description).frame(width: 30, height: 30)
                         }
-
                     }
                 }
             }
