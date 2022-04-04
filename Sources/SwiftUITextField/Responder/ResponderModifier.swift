@@ -26,7 +26,7 @@ private struct ResponderModifier<Value>: ViewModifier where Value: Hashable {
 
 }
 
-public extension View {
+public extension SUITextField {
 
     /// Modifies this view by binding its responder state to the given state value.
     ///
@@ -57,8 +57,8 @@ public extension View {
     ///                 .responder($focusedField, equals: .usernameField)
     ///
     ///             SUITextField(text: $password, placeholder: "Password")
-    ///                 .uiTextFieldSecureTextEntry(true)
     ///                 .responder($focusedField, equals: .passwordField)
+    ///                 .uiTextFieldSecureTextEntry(true)
     ///
     ///             Button("Sign In") {
     ///                 if username.isEmpty {
@@ -94,12 +94,12 @@ public extension View {
     /// Modifies this view by binding its responder state to the given Boolean state
     /// value.
     ///
-    /// Use this modifier to cause the ``SUITextField`` to become first responder
+    /// Use this modifier to cause the ``SwiftUITextField/SUITextField`` to become first responder
     /// whenever the the `condition` value is `true`. You can use this modifier to
     /// observe the responder state of a single view, or programmatically set and
     /// remove focus from the view.
     ///
-    /// In the following example, a single ``SUITextField`` accepts a user's
+    /// In the following example, a single ``SwiftUITextField/SUITextField`` accepts a user's
     /// desired `username`. The text field binds its focus state to the
     /// Boolean value `usernameFieldIsFocused`. A "Submit" button's action
     /// verifies whether the name is available. If the name is unavailable, the

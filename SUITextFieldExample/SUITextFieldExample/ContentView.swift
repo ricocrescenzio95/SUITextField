@@ -8,6 +8,21 @@
 import SwiftUI
 import SwiftUITextField
 
+struct Main: View {
+
+    @State private var isShown = true
+
+    var body: some View {
+        Button(action: { isShown.toggle() }) {
+            Text(isShown ? "Hide" : "Show")
+        }
+        if isShown {
+            ContentView()
+        }
+    }
+
+}
+
 struct ContentView: View {
 
     enum Responder {
@@ -41,8 +56,8 @@ struct ContentView: View {
                             Image(systemName: "trash")
                         }
                     }
-                    .uiTextFieldTextLeftViewMode(.whileEditing)
                     .responder($focus, equals: .first)
+                    .uiTextFieldTextLeftViewMode(.whileEditing)
                 SUITextField(text: $text)
                     .inputAccessoryView {
                         accessoryView
@@ -51,6 +66,7 @@ struct ContentView: View {
                         keyPadInputView
                     }
                     .responder($focus, equals: .second)
+                TextField.init("v15 test", text: $text)
                 SUITextField(text: $text)
                     .inputAccessoryView {
                         accessoryView

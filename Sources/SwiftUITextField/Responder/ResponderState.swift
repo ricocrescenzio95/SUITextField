@@ -7,63 +7,10 @@
 
 import SwiftUI
 
-class ResponderStorage: ObservableObject {
-
-    static let responderQueue = OperationQueue()
-
-    var erasedValue: AnyHashable? {
-        get { fatalError("Must subclass") }
-        set { objectWillChange.send() }
-    }
-
-    var values = Set<AnyHashable>()
-
-    let defaultValue: Any
-
-    init(defaultValue: Any) {
-        self.defaultValue = defaultValue
-    }
-
-}
-
-class AnyHashableResponderStorage: ResponderStorage {
-
-    @Published var value: Any
-
-    override var erasedValue: AnyHashable? {
-        get { value as? AnyHashable }
-        set {
-            value = newValue ?? defaultValue
-            super.erasedValue = newValue
-        }
-    }
-
-    init<Value>(value: Value) where Value: Hashable {
-        self.value = value
-
-        super.init(defaultValue: value)
-    }
-
-}
-
-class BoolResponderStorage: ResponderStorage {
-
-    @Published var value: Bool = false
-
-    override var erasedValue: AnyHashable? {
-        get { value }
-        set {
-            value = newValue as? Bool ?? false
-            super.erasedValue = newValue
-        }
-    }
-
-}
-
 /// A property wrapper type that you can use to drive the responder of ``SUITextField``.
 ///
-/// Use this property wrapper in conjunction with ``View/responder(_:equals:)``
-/// and ``View/responder(_:)`` to tell which text field is the first responder.
+/// Use this property wrapper in conjunction with `responder(_:equals:)`
+/// and `responder(_:)` modifiers to tell which text field is the first responder.
 ///
 /// When the modified view becomes first responder, the wrapped value
 /// of this property updates to match a given prototype value. Similarly, when
@@ -117,34 +64,68 @@ class BoolResponderStorage: ResponderStorage {
 ///
 @propertyWrapper public struct ResponderState<Value>: DynamicProperty where Value: Hashable {
 
+    /// A property wrapper type that can read and write a value that indicates the current focus location.
     @propertyWrapper public struct Binding: DynamicProperty {
 
         @ObservedObject var storage: ResponderStorage
 
+        /// The underlying value referenced by the bound property.
         public var wrappedValue: Value {
             get { storage.erasedValue as? Value ?? storage.defaultValue as! Value }
             nonmutating set { storage.erasedValue = newValue }
         }
 
+        /// A projection of the binding value that returns a binding.
+        ///
+        /// Use the projected value to pass a binding value down a view hierarchy.
         public var projectedValue: Binding { self }
 
     }
 
     @ObservedObject private var storage: ResponderStorage
 
+    /// Creates a state that binds an optional `Hashable` value.
     public init<T>() where Value == T?, T : Hashable {
         storage = AnyHashableResponderStorage(value: nil as Value)
     }
 
+    /// Creates a state that binds boolean  value.
     public init() where Value == Bool {
         storage = BoolResponderStorage(defaultValue: false)
     }
 
+    /// The current state value, that changes when new text field becomes first responder (or resign).
+    ///
+    /// When no text field is first responder, the wrapped value will be nil (for optional-typed state) or false (for Bool- typed state).
     public var wrappedValue: Value {
         get { storage.erasedValue as? Value ?? storage.defaultValue as! Value }
         nonmutating set { storage.erasedValue = newValue }
     }
 
+    /// A projection of the focus state value that returns a binding.
+    ///
+    /// When no ``SUITextField`` is not first responder, the wrapped value is nil for optional-typed state or false for Boolean state.
+    /// In the following example of a simple navigation sidebar, when the user presses the Filter Sidebar Contents button,
+    /// focus moves to the sidebar’s filter text field. Conversely, if the user moves focus to the sidebar’s filter manually,
+    /// then the value of isFiltering automatically becomes true, and the sidebar view updates.
+    ///
+    ///
+    /// ```swift
+    ///struct Sidebar: View {
+    ///    @State private var filterText = ""
+    ///    @ResponderState private var isFiltering: Bool
+    ///    var body: some View {
+    ///        VStack {
+    ///            Button("Filter Sidebar Contents") {
+    ///                isFiltering = true
+    ///            }
+    ///            SUITextField("Filter", text: $filterText)
+    ///                .responder($isFiltering)
+    ///        }
+    ///    }
+    ///}
+    ///```
+    ///
     public var projectedValue: Binding { .init(storage: storage) }
 
 }

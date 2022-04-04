@@ -375,8 +375,7 @@ public extension SUITextField {
             for: .editingChanged
         )
 
-        context.coordinator.responderStorage = context.environment.responderStorage
-        context.coordinator.responderValue = context.environment.responderValue
+        context.coordinator.onMakeUIView(textField, with: context)
 
         if LeftView.self != EmptyView.self {
             context.coordinator.leftView = .init(rootView: leftView)
@@ -388,35 +387,6 @@ public extension SUITextField {
             context.coordinator.rightView = .init(rootView: rightView)
             context.coordinator.rightView?.view.backgroundColor = .clear
             textField.rightView = context.coordinator.rightView?.view
-        }
-
-        guard let value = context.environment.responderValue else {
-            context.coordinator.cancellable = nil
-            return textField
-        }
-
-        let applyResponder = { (isFirstResponder: Bool) -> Void in
-            if isFirstResponder && !textField.isFirstResponder {
-                DispatchQueue.main.async {
-                    textField.becomeFirstResponder()
-                }
-            } else if !isFirstResponder && textField.isFirstResponder {
-                DispatchQueue.main.async {
-                    textField.resignFirstResponder()
-                }
-            }
-        }
-        if let responderStorage = context.environment.responderStorage as? BoolResponderStorage {
-            context.coordinator.cancellable = responderStorage.$value
-                .sink(receiveValue: { selectedValue in
-                    applyResponder(selectedValue)
-                })
-        } else if let responderStorage = context.environment.responderStorage as? AnyHashableResponderStorage {
-            context.coordinator.cancellable = responderStorage.$value
-                .compactMap { $0 as? Hashable }
-                .sink(receiveValue: { selectedValue in
-                    applyResponder(value.hashValue == selectedValue.hashValue)
-                })
         }
 
         makeProxy(textField)
@@ -465,16 +435,14 @@ public extension SUITextField {
 
     // MARK: - Coordinator
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
+    /// The coordinator class that is responsible to bridge the `UITextField` into `SwiftUI`.
+    final class Coordinator: ResponderChainCoordinator, UITextFieldDelegate  {
 
         private let uiKitTextField: SUITextField
         var inputViewController: SUIInputViewController<InputView>?
         var inputAccessoryViewController: SUIInputViewController<InputAccessoryView>?
         var leftView: UIHostingController<LeftView>?
         var rightView: UIHostingController<RightView>?
-        var responderValue: AnyHashable?
-        weak var responderStorage: ResponderStorage?
-        var cancellable: AnyCancellable?
 
         init(_ uiKitTextField: SUITextField) {
             self.uiKitTextField = uiKitTextField
@@ -521,21 +489,13 @@ public extension SUITextField {
 
         public func textFieldDidBeginEditing(_ textField: UITextField) {
             applyCustomViews(to: textField)
-            if responderStorage?.erasedValue != responderValue {
-                responderStorage?.erasedValue = responderValue
-            }
+            onViewBecomeFirstResponder()
             uiKitTextField.onBeginEditingAction()
         }
 
         public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
             removeCustomViews(to: textField)
-            if responderStorage?.erasedValue == responderValue {
-                if let responderStorage = responderStorage as? BoolResponderStorage {
-                    responderStorage.value = false
-                } else if let responderStorage = responderStorage as? AnyHashableResponderStorage {
-                    responderStorage.value = responderStorage.defaultValue
-                }
-            }
+            onViewResignFirstResponder()
             uiKitTextField.onEndEditingAction(reason)
         }
 
