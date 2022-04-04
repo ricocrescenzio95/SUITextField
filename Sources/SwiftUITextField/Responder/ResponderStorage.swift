@@ -46,6 +46,7 @@ class AnyHashableResponderStorage: ResponderStorage {
 
 }
 
+/// Concrete `ResponderStorage` for bool binding.
 class BoolResponderStorage: ResponderStorage {
 
     @Published var value: Bool = false

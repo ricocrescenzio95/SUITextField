@@ -7,25 +7,6 @@
 
 import SwiftUI
 
-private struct ResponderModifier<Value>: ViewModifier where Value: Hashable {
-
-    @ResponderState.Binding var binding: Value
-    private let value: Value
-
-    init(binding: ResponderState<Value>.Binding, equals value: Value) {
-        self.value = value
-        _binding = binding
-        _ = binding.storage.values.insert(value)
-    }
-
-    func body(content: Content) -> some View {
-        content
-            .environment(\.responderValue, value)
-            .environment(\.responderStorage, $binding.storage)
-    }
-
-}
-
 public extension SUITextField {
 
     /// Modifies this view by binding its responder state to the given state value.
@@ -88,7 +69,10 @@ public extension SUITextField {
     ///     binding should change.
     /// - Returns: The modified view.
     func responder<Value>(_ binding: ResponderState<Value>.Binding, equals value: Value) -> some View where Value: Hashable {
-        modifier(ResponderModifier(binding: binding, equals: value))
+        _ = binding.storage.values.insert(value)
+        return self
+            .environment(\.responderValue, value)
+            .environment(\.responderStorage, binding.storage)
     }
 
     /// Modifies this view by binding its responder state to the given Boolean state
@@ -141,7 +125,7 @@ public extension SUITextField {
     ///
     /// - Returns: The modified view.
     func responder(_ binding: ResponderState<Bool>.Binding) -> some View {
-        modifier(ResponderModifier(binding: binding, equals: true))
+        responder(binding, equals: true)
     }
 
 }

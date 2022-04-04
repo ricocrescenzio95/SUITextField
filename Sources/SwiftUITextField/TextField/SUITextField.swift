@@ -265,7 +265,8 @@ public extension SUITextField {
     /// You can use this proxy to apply all changes you need when a state has changed.
     ///
     /// - Important: Since this function is called during a state update, you should be sure
-    /// to avoid creating loops for instance by using `DispatchQueue.main.async`.
+    /// to avoid modifying the state, for instance by using `DispatchQueue.main.async`.
+    /// `SwiftUI` will emit a runtime warning, in case.
     ///
     /// - Parameter action: A block executed after the text field is created.
     /// - Returns: The modified text field.
