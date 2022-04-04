@@ -1,14 +1,13 @@
 <h1 align="center">
   <br>
-  <a href="http://www.amitmerchant.com/electron-markdownify"><img src="./Sources/SwiftUITextField/SwiftUITextField.docc/Resources/logo.png" alt="Markdownify" width="200"></a>
-  <br>
-  SwiftUI Text Field
-  <br>
+<img src="./Sources/SwiftUITextField/SwiftUITextField.docc/Resources/logo.png" alt="Markdownify" width="200">
 </h1>
 
-<h4 align="center">A SwiftUI wrapper of UITextField that allows more customization</h4>
+# SwiftUI Text Field
 
-<p align="center">
+### A SwiftUI wrapper of UITextField that allows more customization
+
+<p>
   <a href="https://saythanks.io/to/rico.crescenzio">
       <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
   </a>
@@ -17,15 +16,18 @@
   </a>
 </p>
 
-<p align="center">
+<p>
   <a href="#key-features">Key Features</a> •
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#documentation">Documentation</a> •
   <a href="#license">License</a>
   <br><br><br>
-  <img src="readme-res/main-example.gif">
 </p>
+
+<p align="center">
+  <img src="readme-res/main-example.gif">
+ </p>
 
 ## Key Features
 
