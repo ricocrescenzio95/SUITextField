@@ -101,6 +101,13 @@ struct ContentView: View {
 
 Use Apple `DocC` generated documentation, from Xcode, `Product > Build Documentation`.
 
+## Known Issues
+
+- When an external keyboard is connected and the software keyboard is hidden, 
+on iOS 15 there is small layout jump when switching from a text field with custom input view and one
+with normal software keyboard
+- On iOS 14 this behavior is worse: sometimes the system tries to re-layout the component infinitely, leading to a
+stack overflow and crash! Need to understand what actually happens under the hood...
 
 ## Found a bug or want new feature?
 
