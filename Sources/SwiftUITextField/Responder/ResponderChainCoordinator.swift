@@ -32,12 +32,12 @@ import Combine
 ///         let textField = UITextField()
 ///         textField.delegate = context.coordinator
 ///         context.coordinator.onMakeUIView(textField, with: context) // 1. make your uiView and call onMakeUIView
-///         return textField()
+///         return textField
 ///     }
 ///
 ///     func updateUIView(_ uiView: UITextField, context: Context) {}
 ///
-///     func makeCoordinator() -> CustomCoordinator {  }
+///     func makeCoordinator() -> CustomCoordinator { CustomCoordinator() }
 ///
 ///     // CustomCoordinator inherits ResponderChainCoordinator
 ///     class CustomCoordinator: ResponderChainCoordinator, UITextFieldDelegate {
