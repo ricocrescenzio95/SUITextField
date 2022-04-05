@@ -31,10 +31,11 @@
 
 ## Key Features
 
-* InputView and InputAccessoryView
-* LeftView and RightView
-* All `UITextFieldDelegate` methods exposed as `SwiftUI` modifiers.
+* `InputView` and `InputAccessoryView`
+* `LeftView` and `RightView`
+* All `UITextFieldDelegate` methods exposed as `SwiftUI` modifiers
 * Programmatic navigation similar to iOS 15 `FocusState`
+* A default `ResponderNavigatorView` usable as an `InputAccessoryView` to navigate through text fields
 * DocC documented!
 
 ## Installation
@@ -72,7 +73,7 @@ struct ContentView: View {
             VStack {
                 SUITextField(text: $text, placeholder: "Insert a text...")
                     .inputAccessoryView {
-                        MyAccessoryView() // add an accessory view 
+                        ResponderNavigatorView(responder: $focus) // add default ResponderNavigatorView as input accessory view
                     }
                     .onReturnKeyPressed {
                         focus = nil // set focus to nil to close keyboard on return key tap
@@ -87,7 +88,7 @@ struct ContentView: View {
                     .uiTextFieldTextLeftViewMode(.whileEditing)
                 SUITextField(text: .constant(date.description))
                     .inputAccessoryView {
-                        MyAccessoryView()
+                        MyAccessoryView() // add a custom accessory view 
                     }
                     .inputView {
                         // Use a date picker as input view!
