@@ -12,16 +12,33 @@ import SwiftUI
 /// You typically set this view as ``SUITextField/inputAccessoryView(view:)`` to show it on top of the keyboard.
 /// By default it shows you 2 buttons to navigate backward/forward and a close button to dismiss the keyboard.
 ///
+/// ![Example image](responder-view)
+///
 /// You can customize the appearance of those views when creating using one of the provided init.
-public struct ResponderNavigatorView<Responder, BackButton, NextButton, CloseButton>: View
-where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, CloseButton: View {
+public struct ResponderNavigatorView<Responder, BackButton, NextButton, CenterView, CloseButton>: View
+where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, CenterView: View, CloseButton: View {
 
     @ResponderState.Binding private var responder: Responder?
     private let backButton: BackButton
     private let nextButton: NextButton
+    private let centerView: CenterView
     private let closeButton: CloseButton
 
     private let allCases = Array(Responder.allCases)
+
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        @ViewBuilder backButton: () -> BackButton,
+        @ViewBuilder nextButton: () -> NextButton,
+        @ViewBuilder centerView: () -> CenterView,
+        @ViewBuilder closeButton: () -> CloseButton
+    ) {
+        _responder = responder
+        self.backButton = backButton()
+        self.nextButton = nextButton()
+        self.centerView = centerView()
+        self.closeButton = closeButton()
+    }
 
     /// Creates a navigator view with the given responder binding and control views.
     ///
@@ -36,23 +53,30 @@ where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, Cl
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton,
         @ViewBuilder closeButton: () -> CloseButton
-    ) {
-        _responder = responder
-        self.backButton = backButton()
-        self.nextButton = nextButton()
-        self.closeButton = closeButton()
+    ) where CenterView == EmptyView {
+        self.init(
+            responder: responder,
+            backButton: backButton,
+            nextButton: nextButton,
+            centerView: { EmptyView() },
+            closeButton: closeButton
+        )
     }
 
     public var body: some View {
-        HStack(spacing: 16) {
-            Button(action: goPrevious) {
-                backButton
+        HStack(spacing: 8) {
+            HStack(spacing: 16) {
+                Button(action: goPrevious) {
+                    backButton
+                }
+                .disabled(currentIndex.map { $0 == .zero } ?? true)
+                Button(action: goNext) {
+                    nextButton
+                }
+                .disabled(currentIndex.map { $0 == Responder.allCases.count - 1 } ?? true)
             }
-            .disabled(currentIndex.map { $0 == .zero } ?? true)
-            Button(action: goNext) {
-                nextButton
-            }
-            .disabled(currentIndex.map { $0 == Responder.allCases.count - 1 } ?? true)
+            Spacer()
+            centerView
             Spacer()
             Button(action: { responder = nil }) {
                 closeButton
@@ -92,11 +116,13 @@ public extension ResponderNavigatorView {
     /// This init use all default views.
     /// - Parameters:
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
-    init(responder: ResponderState<Responder?>.Binding) where BackButton == Image, NextButton == Image, CloseButton == Text {
+    init(responder: ResponderState<Responder?>.Binding)
+    where BackButton == Image, NextButton == Image, CloseButton == Text, CenterView == EmptyView {
         _responder = responder
         self.backButton = Self.defaultBack
         self.nextButton = Self.defaultNext
         self.closeButton = Self.defaultClose
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -112,11 +138,12 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder nextButton: () -> NextButton,
         @ViewBuilder closeButton: () -> CloseButton
-    ) where BackButton == Image {
+    ) where BackButton == Image, CenterView == EmptyView {
         _responder = responder
         self.backButton = Self.defaultBack
         self.nextButton = nextButton()
         self.closeButton = closeButton()
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -132,11 +159,12 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder closeButton: () -> CloseButton
-    ) where NextButton == Image {
+    ) where NextButton == Image, CenterView == EmptyView {
         _responder = responder
         self.backButton = backButton()
         self.nextButton = Self.defaultNext
         self.closeButton = closeButton()
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -151,11 +179,12 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton
-    ) where CloseButton == Text {
+    ) where CloseButton == Text, CenterView == EmptyView {
         _responder = responder
         self.backButton = backButton()
         self.nextButton = nextButton()
         self.closeButton = Self.defaultClose
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -169,11 +198,12 @@ public extension ResponderNavigatorView {
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton
-    ) where NextButton == Image, CloseButton == Text {
+    ) where NextButton == Image, CloseButton == Text, CenterView == EmptyView {
         _responder = responder
         self.backButton = backButton()
         self.nextButton = Self.defaultNext
         self.closeButton = Self.defaultClose
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -187,11 +217,12 @@ public extension ResponderNavigatorView {
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder nextButton: () -> NextButton
-    ) where BackButton == Image, CloseButton == Text {
+    ) where BackButton == Image, CloseButton == Text, CenterView == EmptyView {
         _responder = responder
         self.backButton = Self.defaultBack
         self.nextButton = nextButton()
         self.closeButton = Self.defaultClose
+        centerView = EmptyView()
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -205,11 +236,32 @@ public extension ResponderNavigatorView {
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder closeButton: () -> CloseButton
-    ) where BackButton == Image, NextButton == Image {
+    ) where BackButton == Image, NextButton == Image, CenterView == EmptyView {
         _responder = responder
         self.backButton = Self.defaultBack
         self.nextButton = Self.defaultNext
         self.closeButton = closeButton()
+        centerView = EmptyView()
+    }
+
+}
+
+public extension ResponderNavigatorView where CenterView == EmptyView {
+
+    /// Add a custom view in the middle of the navigator view.
+    ///
+    /// - Parameter view: A `@ViewBuilder` returning the view to be placed in the center of navigator.
+    /// - Returns: The modified view.
+    func centerView<Content>(
+        @ViewBuilder view: () -> Content
+    ) -> ResponderNavigatorView<Responder, BackButton, NextButton, Content, CloseButton> where Content: View {
+        ResponderNavigatorView<Responder, BackButton, NextButton, Content, CloseButton>(
+            responder: _responder,
+            backButton: { backButton },
+            nextButton: { nextButton},
+            centerView: view,
+            closeButton: { closeButton }
+        )
     }
 
 }

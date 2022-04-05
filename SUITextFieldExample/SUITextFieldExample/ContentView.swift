@@ -36,7 +36,7 @@ struct ContentView: View {
             VStack {
                 SUITextField(text: $text)
                     .inputAccessoryView {
-                        accessoryView
+                        navigator
                     }
                     .onReturnKeyPressed {
                         focus = nil
@@ -51,15 +51,12 @@ struct ContentView: View {
                     .uiTextFieldTextLeftViewMode(.whileEditing)
                 SUITextField(text: $text)
                     .inputAccessoryView {
-                        ResponderNavigatorView(responder: $focus)
-                    }
-                    .inputView {
-                        keyPadInputView
+                        navigator
                     }
                     .responder($focus, equals: .second)
                 SUITextField(text: .constant(date.description))
                     .inputAccessoryView {
-                        accessoryView
+                        navigator
                     }
                     .inputView {
                         DatePicker("Select date", selection: $date)
@@ -75,49 +72,11 @@ struct ContentView: View {
         .uiTextFieldBorderStyle(.roundedRect)
     }
 
-    var accessoryView: some View {
-        VStack {
-            HStack {
-                Button(action: goPrevious) {
-                    Text("<")
-                        .frame(width: 30, height: 30)
-                }
-                .disabled(focus == .first)
-                Button(action: goNext) {
-                    Text(">")
-                        .frame(width: 30, height: 30)
-                }
-                .disabled(focus == .third)
-                Spacer()
+    private var navigator: some View {
+        ResponderNavigatorView(responder: $focus)
+            .centerView {
                 Text(text)
-                Spacer()
-                Button(action: {
-                    focus = nil
-                    isFocused = false
-                }) {
-                    Text("Dismiss")
-                }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    func goNext() {
-        if focus == .first {
-            focus = .second
-        } else if focus == .second {
-            focus = .third
-        }
-    }
-
-    func goPrevious() {
-        if focus == .third {
-            focus = .second
-        } else if focus == .second {
-            focus = .first
-        }
     }
 
     @ViewBuilder

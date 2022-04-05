@@ -93,6 +93,10 @@ public extension SUITextField where InputAccessoryView == EmptyView {
     /// }
     /// ```
     ///
+    /// Here's an example if the input accessory view is ``ResponderNavigatorView``.
+    ///
+    /// ![Example image](responder-view)
+    ///
     /// - Note: This api restricts the number of `inputAccessoryView` modifier to 1 (since a text field
     /// can have 1 and only 1 accessory view at same time). This means that if you try to apply 2 times this modifier
     /// the compiler will throw an error.
@@ -122,14 +126,21 @@ public extension SUITextField where InputView == EmptyView {
     ///
     /// When the text field becomes first responder, it shows a view instead of the default software keyboard.
     ///
+    /// Here's an example using a date picker as an input view.
+    ///
     /// ```swift
     /// var body: some View {
-    ///     SUITextField(text: $text)
+    ///     SUITextField(text: .constant(date.description)) // use a constant binding as a result of the $date state.
     ///         .inputView(autoSize: true) { // you can omit autoSize, true by default
-    ///             MyCustomKeyboard()
+    ///             DatePicker("Select date", selection: $date)
+    ///                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+    ///                 .datePickerStyle(.wheel)
+    ///                 .labelsHidden()
     ///         }
     /// }
     /// ```
+    ///
+    /// ![Example image](date-picker-input-view)
     ///
     /// - Note: This api restricts the number of `inputView` modifier to 1 (since a text field
     /// can have 1 and only 1 input view at same time). This means that if you try to apply 2 times this modifier
