@@ -69,19 +69,19 @@ import SwiftUI
 
         @ObservedObject var storage: ResponderStorage
 
-        private let get: () -> Value
-        private let set: (Value) -> Void
+        private let getBlock: () -> Value
+        private let setBlock: (Value) -> Void
 
         init(storage: ResponderStorage, get: @escaping () -> Value, set: @escaping (Value) -> Void) {
             self.storage = storage
-            self.get = get
-            self.set = set
+            getBlock = get
+            setBlock = set
         }
 
         /// The underlying value referenced by the bound property.
         public var wrappedValue: Value {
-            get { get() }
-            nonmutating set { set(newValue) }
+            get { getBlock() }
+            nonmutating set { setBlock(newValue) }
         }
 
         /// A projection of the binding value that returns a binding.

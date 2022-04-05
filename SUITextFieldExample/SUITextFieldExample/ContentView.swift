@@ -10,7 +10,7 @@ import SwiftUITextField
 
 struct ContentView: View {
 
-    enum Responder: Hashable {
+    enum Responder: Hashable, CaseIterable {
         case first
         case second
         case third
@@ -51,7 +51,7 @@ struct ContentView: View {
                     .uiTextFieldTextLeftViewMode(.whileEditing)
                 SUITextField(text: $text)
                     .inputAccessoryView {
-                        accessoryView
+                        ResponderNavigatorView(responder: $focus)
                     }
                     .inputView {
                         keyPadInputView

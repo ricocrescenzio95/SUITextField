@@ -45,7 +45,7 @@ struct ContentView: View {
                     .uiTextFieldTextLeftViewMode(.whileEditing)
                 SUITextField(text: .constant(date.description))
                     .inputAccessoryView {
-                        MyAccessoryView()
+                        ResponderNavigatorView(responder: $focus) // or use the provided responder view!
                     }
                     .inputView {
                         // Use a date picker as input view!
@@ -67,9 +67,10 @@ struct ContentView: View {
 
 ## Topics
 
-### Essentials
+### Essential views
 
 - ``SUITextField``
+- ``ResponderNavigatorView``
 
 ### Handling Responder Chain
 
