@@ -15,6 +15,8 @@ import SwiftUI
 /// ![Example image](responder-view)
 ///
 /// You can customize the appearance of those views when creating using one of the provided init.
+///
+/// To apply a center view, use the ``centerView(view:)`` modifier instead.
 public struct ResponderNavigatorView<Responder, BackButton, NextButton, CenterView, CloseButton>: View
 where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, CenterView: View, CloseButton: View {
 
