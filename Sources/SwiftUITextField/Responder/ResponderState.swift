@@ -69,10 +69,19 @@ import SwiftUI
 
         @ObservedObject var storage: ResponderStorage
 
+        private let get: () -> Value
+        private let set: (Value) -> Void
+
+        init(storage: ResponderStorage, get: @escaping () -> Value, set: @escaping (Value) -> Void) {
+            self.storage = storage
+            self.get = get
+            self.set = set
+        }
+
         /// The underlying value referenced by the bound property.
         public var wrappedValue: Value {
-            get { storage.erasedValue as? Value ?? storage.defaultValue as! Value }
-            nonmutating set { storage.erasedValue = newValue }
+            get { get() }
+            nonmutating set { set(newValue) }
         }
 
         /// A projection of the binding value that returns a binding.
@@ -126,6 +135,12 @@ import SwiftUI
     ///}
     ///```
     ///
-    public var projectedValue: Binding { .init(storage: storage) }
+    public var projectedValue: Binding {
+        .init(storage: storage) {
+            wrappedValue
+        } set: {
+            wrappedValue = $0
+        }
+    }
 
 }
