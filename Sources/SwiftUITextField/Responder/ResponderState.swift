@@ -9,8 +9,8 @@ import SwiftUI
 
 /// A property wrapper type that you can use to drive the responder of ``SUITextField``.
 ///
-/// Use this property wrapper in conjunction with `responder(_:equals:)`
-/// and `responder(_:)` modifiers to tell which text field is the first responder.
+/// Use this property wrapper in conjunction with ``SUITextField/responder(_:equals:)``
+/// and ``SUITextField/responder(_:)`` modifiers to tell which text field is the first responder.
 ///
 /// When the modified view becomes first responder, the wrapped value
 /// of this property updates to match a given prototype value. Similarly, when
