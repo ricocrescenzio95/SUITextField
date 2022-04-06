@@ -8,6 +8,12 @@
 ### A SwiftUI wrapper of UITextField that allows more customization
 
 <p>
+  <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dswift-versions">
+  </a>
+    <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dplatforms">
+  </a>
   <a href="https://saythanks.io/to/rico.crescenzio">
       <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
   </a>

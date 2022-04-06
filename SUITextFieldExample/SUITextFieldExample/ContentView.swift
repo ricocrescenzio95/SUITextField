@@ -24,52 +24,52 @@ struct ContentView: View {
     @State private var date = Date()
 
     var body: some View {
-        ScrollView {
-            Text("SUITextField")
-                .font(.headline)
-                .padding(.top)
-            Image("logo")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 100)
-                .padding(.vertical, 50)
-            VStack {
-                SUITextField(text: $text)
-                    .inputAccessoryView {
-                        navigator
-                    }
-                    .onReturnKeyPressed {
-                        focus = nil
-                    }
-                    .leftView {
-                        Button(action: { text = "" }) {
-                            Image(systemName: "trash")
+        NavigationView {
+            ScrollView {
+                Image("logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 100)
+                    .padding(.vertical, 50)
+                VStack {
+                    SUITextField(text: $text)
+                        .inputAccessoryView {
+                            navigator
                         }
-                        .padding(.horizontal, 2)
-                    }
-                    .responder($focus, equals: .first)
-                    .uiTextFieldTextLeftViewMode(.whileEditing)
-                SUITextField(text: $text)
-                    .inputAccessoryView {
-                        navigator
-                    }
-                    .responder($focus, equals: .second)
-                SUITextField(text: .constant(date.description))
-                    .inputAccessoryView {
-                        navigator
-                    }
-                    .inputView {
-                        DatePicker("Select date", selection: $date)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .datePickerStyle(.wheel)
-                            .labelsHidden()
-                    }
-                    .responder($focus, equals: .third)
+                        .onReturnKeyPressed {
+                            focus = nil
+                        }
+                        .leftView {
+                            Button(action: { text = "" }) {
+                                Image(systemName: "trash")
+                            }
+                            .padding(.horizontal, 2)
+                        }
+                        .responder($focus, equals: .first)
+                        .uiTextFieldTextLeftViewMode(.whileEditing)
+                    SUITextField(text: $text)
+                        .inputAccessoryView {
+                            navigator
+                        }
+                        .responder($focus, equals: .second)
+                    SUITextField(text: .constant(date.description))
+                        .inputAccessoryView {
+                            navigator
+                        }
+                        .inputView {
+                            DatePicker("Select date", selection: $date)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .datePickerStyle(.wheel)
+                                .labelsHidden()
+                        }
+                        .responder($focus, equals: .third)
+                }
+                .padding()
             }
-            .padding()
+            .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
+            .uiTextFieldBorderStyle(.roundedRect)
+            .navigationTitle("SUITextField")
         }
-        .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
-        .uiTextFieldBorderStyle(.roundedRect)
     }
 
     private var navigator: some View {

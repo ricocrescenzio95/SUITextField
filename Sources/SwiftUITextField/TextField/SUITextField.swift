@@ -28,19 +28,19 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     private var leftView: LeftView
     private var rightView: RightView
 
-    private var makeProxy: (UITextField) -> Void = { _ in }
-    private var updateProxy: (UITextField) -> Void = { _ in }
-    private var shouldBeginEditingAction: () -> Bool = { true }
-    private var shouldEndEditingAction: () -> Bool = { true }
-    private var shouldClearAction: () -> Bool = { true }
-    private var onBeginEditingAction: () -> Void = {}
-    private var onEndEditingAction: (UITextField.DidEndEditingReason) -> Void = { _ in }
-    private var onReturnKeyPressedAction: () -> Void = {}
-    private var onSelectionChangedAction: (UITextField) -> Void = { _ in }
+    private var makeProxy: ((UITextField) -> Void)? = nil
+    private var updateProxy: ((UITextField) -> Void)? = nil
+    private var shouldBeginEditingAction: (() -> Bool)? = nil
+    private var shouldEndEditingAction: (() -> Bool)? = nil
+    private var shouldClearAction: (() -> Bool)? = nil
+    private var onBeginEditingAction: (() -> Void)? = nil
+    private var onEndEditingAction: ((UITextField.DidEndEditingReason) -> Void)? = nil
+    private var onReturnKeyPressedAction: (() -> Void)? = nil
+    private var onSelectionChangedAction: ((UITextField) -> Void)? = nil
 
-    private var shouldChangeCharactersInAction: (_ originString: String,
+    private var shouldChangeCharactersInAction: ((_ originString: String,
                                                  _ range: NSRange,
-                                                 _ string: String) -> Bool = { _, _, _ in true }
+                                                 _ string: String) -> Bool)? = nil
 
     // MARK: - Initializers
 
@@ -116,6 +116,7 @@ public extension SUITextField where InputAccessoryView == EmptyView {
             inputView: { inputView },
             inputAccessoryView: view
         )
+        .applyAll(from: self)
     }
 
 }
@@ -165,6 +166,7 @@ public extension SUITextField where InputView == EmptyView {
             inputView: view,
             inputAccessoryView: { inputAccessoryView }
         )
+        .applyAll(from: self)
     }
 
 }
@@ -207,6 +209,7 @@ public extension SUITextField where LeftView == EmptyView {
             inputView: { inputView },
             inputAccessoryView: { inputAccessoryView }
         )
+        .applyAll(from: self)
     }
 
 }
@@ -249,11 +252,26 @@ public extension SUITextField where RightView == EmptyView {
             inputView: { inputView },
             inputAccessoryView: { inputAccessoryView }
         )
+        .applyAll(from: self)
     }
 
 }
 
 public extension SUITextField {
+
+    private func applyAll<InputView, InputAccessoryView, LeftView, RightView>(
+        from textField: SUITextField<InputView, InputAccessoryView, LeftView, RightView>
+    ) -> Self where InputView: View, InputAccessoryView: View, LeftView:View, RightView: View {
+        apply(value: textField.makeProxy, to: \.makeProxy)
+            .apply(value: textField.updateProxy, to: \.updateProxy)
+            .apply(value: textField.shouldBeginEditingAction, to: \.shouldBeginEditingAction)
+            .apply(value: textField.shouldEndEditingAction, to: \.shouldEndEditingAction)
+            .apply(value: textField.shouldClearAction, to: \.shouldClearAction)
+            .apply(value: textField.onBeginEditingAction, to: \.onBeginEditingAction)
+            .apply(value: textField.onEndEditingAction, to: \.onEndEditingAction)
+            .apply(value: textField.onReturnKeyPressedAction, to: \.onReturnKeyPressedAction)
+            .apply(value: textField.onSelectionChangedAction, to: \.onSelectionChangedAction)
+    }
 
     private func apply<T>(value: T, to path: WritableKeyPath<Self, T>) -> Self {
         var view = self
@@ -394,18 +412,18 @@ public extension SUITextField {
         context.coordinator.onMakeUIView(textField, with: context)
 
         if LeftView.self != EmptyView.self {
-            context.coordinator.leftView = .init(rootView: leftView)
+            context.coordinator.leftView = .init(rootView: leftView, ignoreSafeArea: true)
             context.coordinator.leftView?.view.backgroundColor = .clear
             textField.leftView = context.coordinator.leftView?.view
         }
 
         if RightView.self != EmptyView.self {
-            context.coordinator.rightView = .init(rootView: rightView)
+            context.coordinator.rightView = .init(rootView: rightView, ignoreSafeArea: true)
             context.coordinator.rightView?.view.backgroundColor = .clear
             textField.rightView = context.coordinator.rightView?.view
         }
 
-        makeProxy(textField)
+        makeProxy?(textField)
 
         return textField
     }
@@ -440,7 +458,7 @@ public extension SUITextField {
             context.coordinator.rightView?.rootView = rightView
         }
 
-        updateProxy(uiView)
+        updateProxy?(uiView)
     }
 
     static func dismantleUIView(_ uiView: UITextField, coordinator: Coordinator) {
@@ -493,35 +511,35 @@ public extension SUITextField {
 
         // MARK: - UITextFieldDelegate
 
-        public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool { uiKitTextField.shouldBeginEditingAction() }
+        public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool { uiKitTextField.shouldBeginEditingAction?() ?? true }
 
-        public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool { uiKitTextField.shouldEndEditingAction() }
+        public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool { uiKitTextField.shouldEndEditingAction?() ?? true }
 
-        public func textFieldShouldClear(_ textField: UITextField) -> Bool { uiKitTextField.shouldClearAction() }
+        public func textFieldShouldClear(_ textField: UITextField) -> Bool { uiKitTextField.shouldClearAction?() ?? true }
 
         public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            uiKitTextField.shouldChangeCharactersInAction(textField.text ?? "", range, string)
+            uiKitTextField.shouldChangeCharactersInAction?(textField.text ?? "", range, string) ?? true
         }
 
         public func textFieldDidBeginEditing(_ textField: UITextField) {
             applyCustomViews(to: textField)
             onViewBecomeFirstResponder()
-            uiKitTextField.onBeginEditingAction()
+            uiKitTextField.onBeginEditingAction?()
         }
 
         public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
             removeCustomViews(to: textField)
             onViewResignFirstResponder()
-            uiKitTextField.onEndEditingAction(reason)
+            uiKitTextField.onEndEditingAction?(reason)
         }
 
         public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-            uiKitTextField.onReturnKeyPressedAction()
+            uiKitTextField.onReturnKeyPressedAction?()
             return false
         }
 
         public func textFieldDidChangeSelection(_ textField: UITextField) {
-            uiKitTextField.onSelectionChangedAction(textField)
+            uiKitTextField.onSelectionChangedAction?(textField)
         }
 
     }
