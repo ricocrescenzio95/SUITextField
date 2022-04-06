@@ -68,7 +68,7 @@ struct ContentView: View {
             }
             .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
             .uiTextFieldBorderStyle(.roundedRect)
-            .navigationTitle("SUITextField")
+            .navigationBarTitle("SUITextField")
         }
     }
 

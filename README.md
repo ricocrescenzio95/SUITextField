@@ -42,6 +42,7 @@
 * All `UITextFieldDelegate` methods exposed as `SwiftUI` modifiers
 * Programmatic navigation similar to iOS 15 `FocusState`
 * A default `ResponderNavigatorView` usable as an `InputAccessoryView` to navigate through text fields
+* Attributed placeholder
 * DocC documented!
 
 ## Installation

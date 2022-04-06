@@ -21,7 +21,7 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     // MARK: - Properties
 
     @Binding private var text: String
-    private var placeholder: String?
+    private var placeholder: TextType?
     private var autoSizeInputView: Bool
     private var inputView: InputView
     private var inputAccessoryView: InputAccessoryView
@@ -42,22 +42,9 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
                                                  _ range: NSRange,
                                                  _ string: String) -> Bool)? = nil
 
-    // MARK: - Initializers
-
-    public init(text: Binding<String>, placeholder: String? = nil)
-    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
-        self._text = text
-        self.placeholder = placeholder
-        inputView = EmptyView()
-        inputAccessoryView = EmptyView()
-        leftView = EmptyView()
-        rightView = EmptyView()
-        autoSizeInputView = false
-    }
-
     init(
         text: Binding<String>,
-        placeholder: String? = nil,
+        placeholder: TextType? = nil,
         autoSizeInputView: Bool,
         @ViewBuilder leftView: () -> LeftView,
         @ViewBuilder rightView: () -> RightView,
@@ -74,6 +61,57 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     }
 
 }
+
+// MARK: - Initializers
+
+public extension SUITextField {
+
+    /// Creates a text field with given bound text and a plain placeholder.
+    /// - Parameters:
+    ///   - text: The text binding.
+    ///   - placeholder: A plain placeholder string.
+    init(text: Binding<String>, placeholder: String? = nil)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            text: text,
+            placeholder: placeholder.map { .plain($0) },
+            autoSizeInputView: false,
+            leftView: { EmptyView() },
+            rightView: { EmptyView() },
+            inputView: { EmptyView() },
+            inputAccessoryView: { EmptyView() }
+        )
+    }
+
+    /// Creates a text field with given bound text and a plain placeholder.
+    /// - Parameters:
+    ///   - text: The text binding.
+    ///   - placeholder: An attributed placeholder using `NSAttributedString`.
+    init(text: Binding<String>, placeholder: NSAttributedString)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            text: text,
+            placeholder: .attributed(placeholder),
+            autoSizeInputView: false,
+            leftView: { EmptyView() },
+            rightView: { EmptyView() },
+            inputView: { EmptyView() },
+            inputAccessoryView: { EmptyView() }
+        )
+    }
+
+    /// Creates a text field with given bound text and a plain placeholder.
+    /// - Parameters:
+    ///   - text: The text binding.
+    ///   - placeholder: An attributed placeholder using `AttributedString`
+    @available(iOS 15, *)
+    init(text: Binding<String>, placeholder: AttributedString)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(text: text, placeholder: .init(placeholder))
+    }
+
+}
+
 
 // MARK: - Modifiers
 
@@ -435,7 +473,11 @@ public extension SUITextField {
             }
         }
         uiView.text = text
-        applyIfDifferent(value: placeholder, at: \.placeholder)
+        switch placeholder {
+        case .attributed(let text): applyIfDifferent(value: text, at: \.attributedPlaceholder)
+        case .plain(let text): applyIfDifferent(value: text, at: \.placeholder)
+        case nil: applyIfDifferent(value: nil, at: \.placeholder)
+        }
         applyIfDifferent(value: context.environment.uiFont, at: \.font)
         applyIfDifferent(value: context.environment.uiReturnKeyType, at: \.returnKeyType)
         applyIfDifferent(value: context.environment.uiTextFieldSecureTextEntry, at: \.isSecureTextEntry)
