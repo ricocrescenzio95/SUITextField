@@ -22,6 +22,7 @@ struct ContentView: View {
     @ResponderState var isFocused: Bool
     @State private var toggle = false
     @State private var date = Date()
+    @State private var myDouble = 0.0
 
     var body: some View {
         NavigationView {
@@ -33,6 +34,9 @@ struct ContentView: View {
                     .padding(.vertical, 50)
                 VStack {
                     SUITextField(text: $text)
+                        .shouldChangeCharacters { replacement in
+                            replacement.newString.trimmingCharacters(in: CharacterSet.decimalDigits).isEmpty
+                        }
                         .inputAccessoryView {
                             navigator
                         }
@@ -63,6 +67,11 @@ struct ContentView: View {
                                 .labelsHidden()
                         }
                         .responder($focus, equals: .third)
+                    if #available(iOS 15, *) {
+                        SUITextField(value: $myDouble, format: .number)
+                        TextField("test", value: $myDouble, format: .number)
+                        Text(myDouble, format: .number)
+                    }
                 }
                 .padding()
             }

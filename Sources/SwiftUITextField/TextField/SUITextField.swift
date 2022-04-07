@@ -37,10 +37,7 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     private var onEndEditingAction: ((UITextField.DidEndEditingReason) -> Void)? = nil
     private var onReturnKeyPressedAction: (() -> Void)? = nil
     private var onSelectionChangedAction: ((UITextField) -> Void)? = nil
-
-    private var shouldChangeCharactersInAction: ((_ originString: String,
-                                                 _ range: NSRange,
-                                                 _ string: String) -> Bool)? = nil
+    private var shouldChangeCharactersInAction: ((CharacterReplacement) -> Bool)? = nil
 
     init(
         text: Binding<String>,
@@ -100,14 +97,38 @@ public extension SUITextField {
         )
     }
 
+}
+
+@available(iOS 15, *)
+public extension SUITextField {
+
     /// Creates a text field with given bound text and a plain placeholder.
     /// - Parameters:
     ///   - text: The text binding.
     ///   - placeholder: An attributed placeholder using `AttributedString`
-    @available(iOS 15, *)
     init(text: Binding<String>, placeholder: AttributedString)
     where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(text: text, placeholder: .init(placeholder))
+    }
+
+    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: String? = nil, defaultValue: F.FormatInput? = nil)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        let binding = Binding<String>.init {
+            format.format(value.wrappedValue)
+        } set: { newValue in
+            guard let newValue = (try? format.parseStrategy.parse(newValue)) ?? defaultValue else { return }
+            value.wrappedValue = newValue
+        }
+        self.init(
+            text: binding,
+            placeholder: placeholder.map { .plain($0) },
+            autoSizeInputView: false,
+            leftView: { EmptyView() },
+            rightView: { EmptyView() },
+            inputView: { EmptyView() },
+            inputAccessoryView: { EmptyView() }
+        )
     }
 
 }
@@ -309,6 +330,7 @@ public extension SUITextField {
             .apply(value: textField.onEndEditingAction, to: \.onEndEditingAction)
             .apply(value: textField.onReturnKeyPressedAction, to: \.onReturnKeyPressedAction)
             .apply(value: textField.onSelectionChangedAction, to: \.onSelectionChangedAction)
+            .apply(value: textField.shouldChangeCharactersInAction, to: \.shouldChangeCharactersInAction)
     }
 
     private func apply<T>(value: T, to path: WritableKeyPath<Self, T>) -> Self {
@@ -421,10 +443,19 @@ public extension SUITextField {
         apply(value: action, to: \.onSelectionChangedAction)
     }
 
+    /// Called when the text field's text is about to change.
+    ///
+    /// The text field calls the action whenever user actions cause its text to change.
+    /// Use this method to validate text as it is typed by the user. For example, you could use
+    /// this action to prevent the user from entering anything but numerical values.
+    ///
+    /// - Parameters:
+    ///     - action: A block that is executed when the text is about to change. The action block provides you a ``CharacterReplacement``.
+    ///         This block should return `true` to allow the replacement or `false` to keep the old text.
+    ///
+    /// - Returns: The modified text field.
     func shouldChangeCharacters(
-        _ action: @escaping (_ originString: String,
-                             _ range: NSRange,
-                             _ string: String) -> Bool
+        _ action: @escaping (CharacterReplacement) -> Bool
     ) -> Self {
         apply(value: action, to: \.shouldChangeCharactersInAction)
     }
@@ -560,7 +591,16 @@ public extension SUITextField {
         public func textFieldShouldClear(_ textField: UITextField) -> Bool { uiKitTextField.shouldClearAction?() ?? true }
 
         public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            uiKitTextField.shouldChangeCharactersInAction?(textField.text ?? "", range, string) ?? true
+            guard let action = uiKitTextField.shouldChangeCharactersInAction else { return true }
+            let nsString = (textField.text ?? "") as NSString
+            let newString = nsString.replacingCharacters(in: range, with: string)
+            let replacement = CharacterReplacement(
+                originString: textField.text ?? "",
+                newString: newString,
+                range: range,
+                replacementString: string
+            )
+            return action(replacement)
         }
 
         public func textFieldDidBeginEditing(_ textField: UITextField) {

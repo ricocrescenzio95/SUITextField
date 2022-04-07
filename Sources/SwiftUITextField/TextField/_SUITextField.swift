@@ -64,12 +64,14 @@ class SUIInputViewController<Content>: UIInputViewController where Content: View
         addChild(controller)
         view.addSubview(controller.view)
 
-        NSLayoutConstraint.activate([
+        let constraints = [
             controller.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             controller.view.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             controller.view.heightAnchor.constraint(equalTo: view.heightAnchor),
             controller.view.widthAnchor.constraint(equalTo: view.widthAnchor)
-        ])
+        ]
+        constraints.forEach { $0.priority = .init(999) }
+        NSLayoutConstraint.activate(constraints)
 
         controller.didMove(toParent: self)
 
