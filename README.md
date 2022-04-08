@@ -17,7 +17,7 @@
   <a href="https://saythanks.io/to/rico.crescenzio">
       <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
   </a>
-  <a href="https://www.paypal.com/paypalme/ricocrescenzio">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=RWDBC8TS5CNVA">
     <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat">
   </a>
 </p>
@@ -43,6 +43,7 @@
 * Programmatic navigation similar to iOS 15 `FocusState`
 * A default `ResponderNavigatorView` usable as an `InputAccessoryView` to navigate through text fields
 * Attributed placeholder
+* `ParseableFormatStyle` when using `iOS 15`
 * DocC documented!
 
 ## Installation

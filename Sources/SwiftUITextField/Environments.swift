@@ -63,6 +63,10 @@ private struct UITextFieldRightViewModeEnvironmentKey: EnvironmentKey {
     static let defaultValue: UITextField.ViewMode = .never
 }
 
+private struct UITextFieldDefaultTextAttributesEnvironmentKey: EnvironmentKey {
+    static let defaultValue: [NSAttributedString.Key: Any] = [:]
+}
+
 extension EnvironmentValues {
 
     var responderValue: AnyHashable? {
@@ -133,6 +137,11 @@ extension EnvironmentValues {
     var uiTextFieldTextRightViewMode: UITextField.ViewMode {
         get { self[UITextFieldRightViewModeEnvironmentKey.self] }
         set { self[UITextFieldRightViewModeEnvironmentKey.self] = newValue }
+    }
+
+    var uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any] {
+        get { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] }
+        set { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] = newValue }
     }
 
 }
@@ -217,6 +226,10 @@ public extension View {
 
     func uiTextFieldTextRightViewMode(_ uiTextFieldTextRightViewMode: UITextField.ViewMode) -> some View {
         environment(\.uiTextFieldTextRightViewMode, uiTextFieldTextRightViewMode)
+    }
+
+    func uiTextFieldDefaultTextAttributes(_ uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any]) -> some View {
+        environment(\.uiTextFieldDefaultTextAttributes, uiTextFieldDefaultTextAttributes)
     }
 
 }

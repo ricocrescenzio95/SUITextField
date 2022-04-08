@@ -111,7 +111,7 @@ public extension SUITextField {
         self.init(text: text, placeholder: .init(placeholder))
     }
 
-    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: String? = nil, defaultValue: F.FormatInput? = nil)
+    private init<F>(value: Binding<F.FormatInput>, format: F, placeholder: TextType? = nil, defaultValue: F.FormatInput? = nil)
     where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         let binding = Binding<String>.init {
@@ -122,12 +122,101 @@ public extension SUITextField {
         }
         self.init(
             text: binding,
-            placeholder: placeholder.map { .plain($0) },
+            placeholder: placeholder,
             autoSizeInputView: false,
             leftView: { EmptyView() },
             rightView: { EmptyView() },
             inputView: { EmptyView() },
             inputAccessoryView: { EmptyView() }
+        )
+    }
+
+    /// Creates a text field that applies a format style to a bound value and a plain placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// If the format style can’t parse the input, the bound value remains unchanged.
+    ///
+    /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters text that doesn’t represent a valid `Double`, the bound value doesn’t update.
+    ///
+    ///```swift
+    ///@State private var myDouble: Double = 0.673
+    ///var body: some View {
+    ///    VStack {
+    ///        SUITextField(
+    ///            value: $myDouble,
+    ///            format: .number
+    ///        )
+    ///        Text(myDouble, format: .number)
+    ///        Text(myDouble, format: .number.precision(.significantDigits(5)))
+    ///        Text(myDouble, format: .number.notation(.scientific))
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - format: A format style of type F to use when converting between the string the user edits and the
+    ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field leaves binding.value unchanged.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: The plain string placeholder
+    ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
+    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: String? = nil, defaultValue: F.FormatInput? = nil)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            format: format,
+            placeholder: placeholder.map { .plain($0) },
+            defaultValue: defaultValue
+        )
+    }
+
+    /// Creates a text field that applies a format style to a bound value and an attributed placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// If the format style can’t parse the input, the bound value remains unchanged.
+    ///
+    /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters text that doesn’t represent a valid `Double`, the bound value doesn’t update.
+    ///
+    ///```swift
+    ///@State private var myDouble: Double = 0.673
+    ///var body: some View {
+    ///    VStack {
+    ///        SUITextField(
+    ///            value: $myDouble,
+    ///            format: .number,
+    ///            placeholder: AttributedString("Insert a number")
+    ///        )
+    ///        Text(myDouble, format: .number)
+    ///        Text(myDouble, format: .number.precision(.significantDigits(5)))
+    ///        Text(myDouble, format: .number.notation(.scientific))
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - format: A format style of type F to use when converting between the string the user edits and the
+    ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field leaves binding.value unchanged.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: An `AttributedString` placeholder.
+    ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
+    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: AttributedString, defaultValue: F.FormatInput? = nil)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            format: format,
+            placeholder: .attributed(.init(placeholder)),
+            defaultValue: defaultValue
         )
     }
 
@@ -522,6 +611,7 @@ public extension SUITextField {
         applyIfDifferent(value: context.environment.uiTextFieldTextLeftViewMode, at: \.leftViewMode)
         applyIfDifferent(value: context.environment.uiTextFieldTextRightViewMode, at: \.rightViewMode)
         applyIfDifferent(value: context.environment.isEnabled, at: \.isEnabled)
+        uiView.defaultTextAttributes = context.environment.uiTextFieldDefaultTextAttributes
 
         DispatchQueue.main.async {
             context.coordinator.inputViewController?.rootView = inputView
