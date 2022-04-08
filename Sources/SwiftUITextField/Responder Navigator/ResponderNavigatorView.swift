@@ -18,7 +18,7 @@ import SwiftUI
 ///
 /// To apply a center view, use the ``centerView(view:)`` modifier instead.
 public struct ResponderNavigatorView<Responder, BackButton, NextButton, CenterView, CloseButton>: View
-where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, CenterView: View, CloseButton: View {
+where Responder: Hashable, BackButton: View, NextButton: View, CenterView: View, CloseButton: View {
 
     @ResponderState.Binding private var responder: Responder?
     private let backButton: BackButton
@@ -26,16 +26,18 @@ where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, Ce
     private let centerView: CenterView
     private let closeButton: CloseButton
 
-    private let allCases = Array(Responder.allCases)
+    private let values: [Responder]
 
     init(
         responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton,
         @ViewBuilder centerView: () -> CenterView,
         @ViewBuilder closeButton: () -> CloseButton
     ) {
         _responder = responder
+        self.values = values
         self.backButton = backButton()
         self.nextButton = nextButton()
         self.centerView = centerView()
@@ -44,20 +46,25 @@ where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, Ce
 
     /// Creates a navigator view with the given responder binding and control views.
     ///
-    /// Only required parameter is `responder`.
+    /// Only required parameter is `responder` and `values`.
+    ///
+    /// If your `Responder` type conforms to `CaseIterable`, see ``init(responder:backButton:nextButton:closeButton:)``.
     /// - Parameters:
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
     ///   - backButton: The back button; omitting this will show a backward chevron system image.
     ///   - nextButton: The next button; omitting this will show a forward chevron system image.
     ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
     public init(
         responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton,
         @ViewBuilder closeButton: () -> CloseButton
     ) where CenterView == EmptyView {
         self.init(
             responder: responder,
+            values: values,
             backButton: backButton,
             nextButton: nextButton,
             centerView: { EmptyView() },
@@ -75,7 +82,7 @@ where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, Ce
                 Button(action: goNext) {
                     nextButton
                 }
-                .disabled(currentIndex.map { $0 == Responder.allCases.count - 1 } ?? true)
+                .disabled(currentIndex.map { $0 == values.count - 1 } ?? true)
             }
             Spacer()
             centerView
@@ -90,17 +97,17 @@ where Responder: Hashable & CaseIterable, BackButton: View, NextButton: View, Ce
 
     private var currentIndex: Int? {
         guard let responder = responder else { return nil }
-        return allCases.firstIndex(of: responder)
+        return values.firstIndex(of: responder)
     }
 
     private func goNext() {
         guard let index = currentIndex else { return }
-        responder = allCases[index + 1]
+        responder = values[index + 1]
     }
 
     private func goPrevious() {
         guard let index = currentIndex else { return }
-        responder = allCases[index - 1]
+        responder = values[index - 1]
     }
 
 }
@@ -113,6 +120,192 @@ public extension ResponderNavigatorView {
 
     /// Creates a navigator view with the given responder binding and control views.
     ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init use all default views.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    init(responder: ResponderState<Responder?>.Binding, values: [Responder])
+    where BackButton == Image, NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = Self.defaultBack
+        self.nextButton = Self.defaultNext
+        self.closeButton = Self.defaultClose
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default back button.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - nextButton: The next button; omitting this will show a forward chevron system image.
+    ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder nextButton: () -> NextButton,
+        @ViewBuilder closeButton: () -> CloseButton
+    ) where BackButton == Image, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = Self.defaultBack
+        self.nextButton = nextButton()
+        self.closeButton = closeButton()
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default next button.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - backButton: The back button; omitting this will show a backward chevron system image.
+    ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder backButton: () -> BackButton,
+        @ViewBuilder closeButton: () -> CloseButton
+    ) where NextButton == Image, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = backButton()
+        self.nextButton = Self.defaultNext
+        self.closeButton = closeButton()
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default close button.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder backButton: () -> BackButton,
+        @ViewBuilder nextButton: () -> NextButton
+    ) where CloseButton == Text, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = backButton()
+        self.nextButton = nextButton()
+        self.closeButton = Self.defaultClose
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default next and close buttons.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - backButton: The back button; omitting this will show a backward chevron system image.
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder backButton: () -> BackButton
+    ) where NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = backButton()
+        self.nextButton = Self.defaultNext
+        self.closeButton = Self.defaultClose
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default back and close buttons.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - nextButton: The next button; omitting this will show a forward chevron system image.
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder nextButton: () -> NextButton
+    ) where BackButton == Image, CloseButton == Text, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = Self.defaultBack
+        self.nextButton = nextButton()
+        self.closeButton = Self.defaultClose
+        centerView = EmptyView()
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
+    /// See ``init(responder:values:backButton:nextButton:closeButton:)``.
+    ///
+    /// This init shows default next and back button.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
+    ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
+    init(
+        responder: ResponderState<Responder?>.Binding,
+        values: [Responder],
+        @ViewBuilder closeButton: () -> CloseButton
+    ) where BackButton == Image, NextButton == Image, CenterView == EmptyView {
+        _responder = responder
+        self.values = values
+        self.backButton = Self.defaultBack
+        self.nextButton = Self.defaultNext
+        self.closeButton = closeButton()
+        centerView = EmptyView()
+    }
+
+}
+
+public extension ResponderNavigatorView where Responder: CaseIterable {
+
+    /// Creates a navigator view with the given responder binding and control views.
+    /// All possible values are automatically taken from `Responder.allCases`.
+    ///
+    /// Only required parameter is `responder`.
+    ///
+    /// For `Responder` types non conforming to `CaseIterable`, see ``init(responder:values:backButton:nextButton:closeButton:)``.
+    /// - Parameters:
+    ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - backButton: The back button; omitting this will show a backward chevron system image.
+    ///   - nextButton: The next button; omitting this will show a forward chevron system image.
+    ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
+    public init(
+        responder: ResponderState<Responder?>.Binding,
+        @ViewBuilder backButton: () -> BackButton,
+        @ViewBuilder nextButton: () -> NextButton,
+        @ViewBuilder closeButton: () -> CloseButton
+    ) where CenterView == EmptyView {
+        self.init(
+            responder: responder,
+            values: Array(Responder.allCases),
+            backButton: backButton,
+            nextButton: nextButton,
+            centerView: { EmptyView() },
+            closeButton: closeButton
+        )
+    }
+
+    /// Creates a navigator view with the given responder binding and control views.
+    ///
     /// See ``init(responder:backButton:nextButton:closeButton:)``.
     ///
     /// This init use all default views.
@@ -120,11 +313,7 @@ public extension ResponderNavigatorView {
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
     init(responder: ResponderState<Responder?>.Binding)
     where BackButton == Image, NextButton == Image, CloseButton == Text, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = Self.defaultBack
-        self.nextButton = Self.defaultNext
-        self.closeButton = Self.defaultClose
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases))
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -141,11 +330,7 @@ public extension ResponderNavigatorView {
         @ViewBuilder nextButton: () -> NextButton,
         @ViewBuilder closeButton: () -> CloseButton
     ) where BackButton == Image, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = Self.defaultBack
-        self.nextButton = nextButton()
-        self.closeButton = closeButton()
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), nextButton: nextButton, closeButton: closeButton)
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -162,11 +347,7 @@ public extension ResponderNavigatorView {
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder closeButton: () -> CloseButton
     ) where NextButton == Image, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = backButton()
-        self.nextButton = Self.defaultNext
-        self.closeButton = closeButton()
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), backButton: backButton, closeButton: closeButton)
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -182,11 +363,7 @@ public extension ResponderNavigatorView {
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton
     ) where CloseButton == Text, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = backButton()
-        self.nextButton = nextButton()
-        self.closeButton = Self.defaultClose
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), backButton: backButton, nextButton: nextButton)
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -201,11 +378,7 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton
     ) where NextButton == Image, CloseButton == Text, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = backButton()
-        self.nextButton = Self.defaultNext
-        self.closeButton = Self.defaultClose
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), backButton: backButton)
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -215,16 +388,13 @@ public extension ResponderNavigatorView {
     /// This init shows default back and close buttons.
     /// - Parameters:
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
+    ///   - values: The array of values that should match against `responder` bound property.
     ///   - nextButton: The next button; omitting this will show a forward chevron system image.
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder nextButton: () -> NextButton
     ) where BackButton == Image, CloseButton == Text, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = Self.defaultBack
-        self.nextButton = nextButton()
-        self.closeButton = Self.defaultClose
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), nextButton: nextButton)
     }
 
     /// Creates a navigator view with the given responder binding and control views.
@@ -239,11 +409,7 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder closeButton: () -> CloseButton
     ) where BackButton == Image, NextButton == Image, CenterView == EmptyView {
-        _responder = responder
-        self.backButton = Self.defaultBack
-        self.nextButton = Self.defaultNext
-        self.closeButton = closeButton()
-        centerView = EmptyView()
+        self.init(responder: responder, values: Array(Responder.allCases), closeButton: closeButton)
     }
 
 }
@@ -259,6 +425,7 @@ public extension ResponderNavigatorView where CenterView == EmptyView {
     ) -> ResponderNavigatorView<Responder, BackButton, NextButton, Content, CloseButton> where Content: View {
         ResponderNavigatorView<Responder, BackButton, NextButton, Content, CloseButton>(
             responder: _responder,
+            values: values,
             backButton: { backButton },
             nextButton: { nextButton},
             centerView: view,
