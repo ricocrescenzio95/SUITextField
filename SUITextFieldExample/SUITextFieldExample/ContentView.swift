@@ -10,7 +10,7 @@ import SwiftUITextField
 
 struct ContentView: View {
 
-    enum Responder: Hashable, CaseIterable {
+    enum Responder: CaseIterable {
         case first
         case second
         case third

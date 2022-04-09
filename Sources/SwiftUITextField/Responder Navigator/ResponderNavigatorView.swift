@@ -114,9 +114,23 @@ where Responder: Hashable, BackButton: View, NextButton: View, CenterView: View,
 
 public extension ResponderNavigatorView {
 
-    private static var defaultBack: Image { .init(systemName: "chevron.backward") }
-    private static var defaultNext: Image { .init(systemName: "chevron.forward") }
-    private static var defaultClose: Text { .init("Close") }
+    private static var defaultBack: Image {
+        if #available(iOS 14, *) {
+            return .init(systemName: "chevron.backward")
+        } else {
+            return .init(systemName: "arrow.left")
+        }
+    }
+
+    private static var defaultNext: Image {
+        if #available(iOS 14, *) {
+            return .init(systemName: "chevron.forward")
+        } else {
+            return .init(systemName: "arrow.right")
+        }
+    }
+
+    private static var defaultClose: Image { .init(systemName: "xmark") }
 
     /// Creates a navigator view with the given responder binding and control views.
     ///
@@ -127,7 +141,7 @@ public extension ResponderNavigatorView {
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
     ///   - values: The array of values that should match against `responder` bound property.
     init(responder: ResponderState<Responder?>.Binding, values: [Responder])
-    where BackButton == Image, NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+    where BackButton == Image, NextButton == Image, CloseButton == Image, CenterView == EmptyView {
         _responder = responder
         self.values = values
         self.backButton = Self.defaultBack
@@ -198,7 +212,7 @@ public extension ResponderNavigatorView {
         values: [Responder],
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton
-    ) where CloseButton == Text, CenterView == EmptyView {
+    ) where CloseButton == Image, CenterView == EmptyView {
         _responder = responder
         self.values = values
         self.backButton = backButton()
@@ -220,7 +234,7 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         values: [Responder],
         @ViewBuilder backButton: () -> BackButton
-    ) where NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+    ) where NextButton == Image, CloseButton == Image, CenterView == EmptyView {
         _responder = responder
         self.values = values
         self.backButton = backButton()
@@ -242,7 +256,7 @@ public extension ResponderNavigatorView {
         responder: ResponderState<Responder?>.Binding,
         values: [Responder],
         @ViewBuilder nextButton: () -> NextButton
-    ) where BackButton == Image, CloseButton == Text, CenterView == EmptyView {
+    ) where BackButton == Image, CloseButton == Image, CenterView == EmptyView {
         _responder = responder
         self.values = values
         self.backButton = Self.defaultBack
@@ -288,7 +302,7 @@ public extension ResponderNavigatorView where Responder: CaseIterable {
     ///   - backButton: The back button; omitting this will show a backward chevron system image.
     ///   - nextButton: The next button; omitting this will show a forward chevron system image.
     ///   - closeButton: The close button. Omitting this will show a simple Text with "Close".
-    public init(
+    init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton,
@@ -312,7 +326,7 @@ public extension ResponderNavigatorView where Responder: CaseIterable {
     /// - Parameters:
     ///   - responder: The ``ResponderState/Binding`` property that this view can change.
     init(responder: ResponderState<Responder?>.Binding)
-    where BackButton == Image, NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+    where BackButton == Image, NextButton == Image, CloseButton == Image, CenterView == EmptyView {
         self.init(responder: responder, values: Array(Responder.allCases))
     }
 
@@ -362,7 +376,7 @@ public extension ResponderNavigatorView where Responder: CaseIterable {
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton,
         @ViewBuilder nextButton: () -> NextButton
-    ) where CloseButton == Text, CenterView == EmptyView {
+    ) where CloseButton == Image, CenterView == EmptyView {
         self.init(responder: responder, values: Array(Responder.allCases), backButton: backButton, nextButton: nextButton)
     }
 
@@ -377,7 +391,7 @@ public extension ResponderNavigatorView where Responder: CaseIterable {
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder backButton: () -> BackButton
-    ) where NextButton == Image, CloseButton == Text, CenterView == EmptyView {
+    ) where NextButton == Image, CloseButton == Image, CenterView == EmptyView {
         self.init(responder: responder, values: Array(Responder.allCases), backButton: backButton)
     }
 
@@ -393,7 +407,7 @@ public extension ResponderNavigatorView where Responder: CaseIterable {
     init(
         responder: ResponderState<Responder?>.Binding,
         @ViewBuilder nextButton: () -> NextButton
-    ) where BackButton == Image, CloseButton == Text, CenterView == EmptyView {
+    ) where BackButton == Image, CloseButton == Image, CenterView == EmptyView {
         self.init(responder: responder, values: Array(Responder.allCases), nextButton: nextButton)
     }
 
