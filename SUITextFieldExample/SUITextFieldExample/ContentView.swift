@@ -98,6 +98,7 @@ struct ContentView: View {
             .uiTextFieldDefaultTextAttributes(attributes)
             .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
             .uiTextFieldBorderStyle(.roundedRect)
+            .uiTextFieldAdjustsFontSizeToFitWidth(.enabled(minSize: 8))
             .navigationBarTitle("SUITextField")
         }
     }

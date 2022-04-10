@@ -611,7 +611,19 @@ public extension SUITextField {
         applyIfDifferent(value: context.environment.uiTextFieldTextLeftViewMode, at: \.leftViewMode)
         applyIfDifferent(value: context.environment.uiTextFieldTextRightViewMode, at: \.rightViewMode)
         applyIfDifferent(value: context.environment.isEnabled, at: \.isEnabled)
+        applyIfDifferent(value: context.environment.uiTextFieldSpellCheckingType, at: \.spellCheckingType)
+        applyIfDifferent(value: context.environment.uiTextFieldPasswordRules, at: \.passwordRules)
+
         uiView.defaultTextAttributes = context.environment.uiTextFieldDefaultTextAttributes
+
+        switch context.environment.uiTextFieldAdjustsFontSizeToFitWidth {
+        case .disabled:
+            applyIfDifferent(value: false, at: \.adjustsFontSizeToFitWidth)
+            applyIfDifferent(value: .zero, at: \.minimumFontSize)
+        case .enabled(let minSize):
+            applyIfDifferent(value: true, at: \.adjustsFontSizeToFitWidth)
+            applyIfDifferent(value: minSize, at: \.minimumFontSize)
+        }
 
         DispatchQueue.main.async {
             context.coordinator.inputViewController?.rootView = inputView

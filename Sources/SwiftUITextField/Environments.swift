@@ -67,6 +67,18 @@ private struct UITextFieldDefaultTextAttributesEnvironmentKey: EnvironmentKey {
     static let defaultValue: [NSAttributedString.Key: Any] = [:]
 }
 
+private struct UITextFieldSpellCheckingTypeEnvironmentKey: EnvironmentKey {
+    static let defaultValue = UITextSpellCheckingType.default
+}
+
+private struct UITextFieldPasswordRulesEnvironmentKey: EnvironmentKey {
+    static let defaultValue: UITextInputPasswordRules? = nil
+}
+
+private struct UITextFieldAdjustsFontSizeToFitWidthEnvironmentKey: EnvironmentKey {
+    static let defaultValue = FontSizeWidthAdjustment.disabled
+}
+
 extension EnvironmentValues {
 
     var responderValue: AnyHashable? {
@@ -142,6 +154,21 @@ extension EnvironmentValues {
     var uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any] {
         get { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] }
         set { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] = newValue }
+    }
+
+    var uiTextFieldSpellCheckingType: UITextSpellCheckingType {
+        get { self[UITextFieldSpellCheckingTypeEnvironmentKey.self] }
+        set { self[UITextFieldSpellCheckingTypeEnvironmentKey.self] = newValue }
+    }
+
+    var uiTextFieldPasswordRules: UITextInputPasswordRules? {
+        get { self[UITextFieldPasswordRulesEnvironmentKey.self] }
+        set { self[UITextFieldPasswordRulesEnvironmentKey.self] = newValue }
+    }
+
+    var uiTextFieldAdjustsFontSizeToFitWidth: FontSizeWidthAdjustment {
+        get { self[UITextFieldAdjustsFontSizeToFitWidthEnvironmentKey.self] }
+        set { self[UITextFieldAdjustsFontSizeToFitWidthEnvironmentKey.self] = newValue }
     }
 
 }
@@ -232,4 +259,16 @@ public extension View {
         environment(\.uiTextFieldDefaultTextAttributes, uiTextFieldDefaultTextAttributes)
     }
 
+    func uiTextFieldSpellCheckingType(_ uiTextFieldSpellCheckingType: UITextSpellCheckingType) -> some View {
+        environment(\.uiTextFieldSpellCheckingType, uiTextFieldSpellCheckingType)
+    }
+
+    func uiTextFieldPasswordRules(_ uiTextFieldPasswordRules: UITextInputPasswordRules) -> some View {
+        environment(\.uiTextFieldPasswordRules, uiTextFieldPasswordRules)
+    }
+
+    func uiTextFieldAdjustsFontSizeToFitWidth(_ uiTextFieldAdjustsFontSizeToFitWidth: FontSizeWidthAdjustment) -> some View {
+        environment(\.uiTextFieldAdjustsFontSizeToFitWidth, uiTextFieldAdjustsFontSizeToFitWidth)
+    }
+    
 }
