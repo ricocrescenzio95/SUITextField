@@ -9,12 +9,84 @@ import SwiftUI
 import UIKit
 import Combine
 
-/// A `SwiftUI` wrapper of `UITextField` that enable more control and customization.
+/// A SwiftUI wrapper of `UITextField` that enable more control and customization.
 ///
-/// For example this text field allows to set an input view or an input accessory view. Also it allows to set
-/// a left view and a right view like any other `UITextField`.
+/// You create a text field with a placeholder and a binding to a value. If the value is a string,
+/// the text field updates this value continuously as the user types or otherwise edits the text in the field.
+/// For non-string types (only available on `iOS 15`), it updates the value on each change.
 ///
-/// By using ``ResponderState``, you can enable responder navigation through states.
+/// The following example shows a text field to accept a username, and a `Text` view below it that shadows
+/// the continuously updated value of username. The Text view changes color as the user begins and ends editing.
+/// When the user submits their completed entry to the text field, the `onReturnKeyPressed(_:)` modifier execute the `validate(name:)`
+///
+///```swift
+///@State private var username: String = ""
+///@ResponderState private var emailFieldIsFocused: Bool = false
+///
+///var body: some View {
+///    SUITextField(
+///        text: $username,
+///        placeholder: "User name (email address)"
+///    )
+///    .responder($emailFieldIsFocused)
+///    .onReturnKeyPressed {
+///        validate(name: username)
+///    }
+///
+///    Text(username)
+///        .foregroundColor(emailFieldIsFocused ? .red : .blue)
+///}
+///```
+///
+/// **iOS 15 only**
+///
+/// The bound value doesn’t have to be a string. By using a `FormatStyle`, you can bind the text field to a nonstring type,
+/// using the format style to convert the typed text into an instance of the bound type.
+/// The following example uses a `PersonNameComponents.FormatStyle` to convert the name typed in the text field to
+/// a `PersonNameComponents` instance. A Text view below the text field shows the debug description string of this instance.
+///
+///```swift
+///@State private var nameComponents = PersonNameComponents()
+///
+///var body: some View {
+///    SUITextField(
+///        value: $nameComponents,
+///        format: .name(style: .medium)
+///        placeholder: "Proper name"
+///    )
+///    .onReturnKeyPressed {
+///        validate(components: nameComponents)
+///    }
+///    Text(nameComponents.debugDescription)
+///}
+///```
+///
+/// **Styling Text Fields**
+///
+/// All available style and behavior modifiers can be applied to any view that contains one or more `SUITextField`.
+/// This enables you to customize at higher view hierarchy level all text fields to keep the style consistent.
+/// As any other modifier, you can apply further customization at lower level.
+///
+///```swift
+///@State private var givenName: String = ""
+///@State private var familyName: String = ""
+///
+///var body: some View {
+///    VStack {
+///        SUITextField(
+///            text: $givenName,
+///            placeholder: "Given name"
+///        )
+///        .uiTextFieldAutocorrectionType(.no)
+///        SUITextField(
+///            text: $familyName,
+///            placeholder: "Family name"
+///        )
+///        .uiTextFieldAutocorrectionType(.no)
+///    }
+///    .uiTextFieldBorderStyle(.roundedRect)
+///}
+///```
 public struct SUITextField<InputView, InputAccessoryView, LeftView, RightView>: UIViewRepresentable
 where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View {
 
@@ -80,7 +152,7 @@ public extension SUITextField {
         )
     }
 
-    /// Creates a text field with given bound text and a plain placeholder.
+    /// Creates a text field with given bound text and an attributed placeholder.
     /// - Parameters:
     ///   - text: The text binding.
     ///   - placeholder: An attributed placeholder using `NSAttributedString`.
@@ -102,7 +174,7 @@ public extension SUITextField {
 @available(iOS 15, *)
 public extension SUITextField {
 
-    /// Creates a text field with given bound text and a plain placeholder.
+    /// Creates a text field with given bound text and an attributed placeholder.
     /// - Parameters:
     ///   - text: The text binding.
     ///   - placeholder: An attributed placeholder using `AttributedString`
@@ -217,6 +289,106 @@ public extension SUITextField {
             format: format,
             placeholder: .attributed(.init(placeholder)),
             defaultValue: defaultValue
+        )
+    }
+
+    private init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: TextType? = nil)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        let binding = Binding<String>.init {
+            value.wrappedValue.map { format.format($0) } ?? ""
+        } set: { newValue in
+            value.wrappedValue = try? format.parseStrategy.parse(newValue)
+        }
+        self.init(
+            text: binding,
+            placeholder: placeholder,
+            autoSizeInputView: false,
+            leftView: { EmptyView() },
+            rightView: { EmptyView() },
+            inputView: { EmptyView() },
+            inputAccessoryView: { EmptyView() }
+        )
+    }
+
+    /// Creates a text field that applies a format style to a bound value and a plain placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// If the format style can’t parse the input, the bound value is set to `nil`
+    ///
+    /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters an invalid currency value, like letters or emoji, the console output is `Optional(nil)`.
+    ///
+    ///```swift
+    ///@State private var myMoney: Double? = 300.0
+    ///var body: some View {
+    ///    SUITextField(
+    ///        value: $myMoney,
+    ///        format: .currency(code: "USD"),
+    ///    )
+    ///    .onChange(of: myMoney) { newValue in
+    ///        print ("myMoney: \(newValue)")
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - format: A format style of type F to use when converting between the string the user edits and the
+    ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field set binding.value to `nil`.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: The plain string placeholder.
+    init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: String? = nil)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            format: format,
+            placeholder: placeholder.map { .plain($0) }
+        )
+    }
+
+    /// Creates a text field that applies a format style to a bound value and an attributed placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// If the format style can’t parse the input, the bound value is set to `nil`
+    ///
+    /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters an invalid currency value, like letters or emoji, the console output is `Optional(nil)`.
+    ///
+    ///```swift
+    ///@State private var myMoney: Double? = 300.0
+    ///var body: some View {
+    ///    SUITextField(
+    ///        value: $myMoney,
+    ///        format: .currency(code: "USD"),
+    ///        placeholder: AttributedString("Attributed placeholder")
+    ///    )
+    ///    .onChange(of: myMoney) { newValue in
+    ///        print ("myMoney: \(newValue)")
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - format: A format style of type F to use when converting between the string the user edits and the
+    ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field set binding.value to `nil`.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: The attributed string placeholder.
+    init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: AttributedString)
+    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            format: format,
+            placeholder: .attributed(.init(placeholder))
         )
     }
 

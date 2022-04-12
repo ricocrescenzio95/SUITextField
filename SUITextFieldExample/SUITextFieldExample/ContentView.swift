@@ -23,7 +23,7 @@ struct ContentView: View {
     @ResponderState var isFocused: Bool
     @State private var toggle = false
     @State private var date = Date()
-    @State private var myDouble = 0.0
+    @State private var myDouble: Double? = 0.0
 
     let attributes: [NSAttributedString.Key: Any] = [
         .kern: 5,
