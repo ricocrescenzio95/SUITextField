@@ -87,6 +87,8 @@ import Combine
 ///    .uiTextFieldBorderStyle(.roundedRect)
 ///}
 ///```
+///
+/// Check <doc:EnvironmentModifiers> for the list of environment modifiers.
 public struct SUITextField<InputView, InputAccessoryView, LeftView, RightView>: UIViewRepresentable
 where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View {
 
@@ -508,7 +510,7 @@ public extension SUITextField where LeftView == EmptyView {
     ///         .uiTextFieldTextLeftViewMode(.whileEditing)
     /// }
     /// ```
-    /// - Important: `uiTextFieldTextLeftViewMode` should not be set to `.never` to show the view.
+    /// - Important: ``SUITextField/uiTextFieldTextLeftViewMode(_:)`` should not be set to `.never` to show the view.
     ///
     /// - Note: This api restricts the number of `leftView` modifier to 1 (since a text field
     /// can have 1 and only 1 left view at same time). This means that if you try to apply 2 times this modifier
@@ -551,7 +553,7 @@ public extension SUITextField where RightView == EmptyView {
     ///         .uiTextFieldTextRightViewMode(.whileEditing)
     /// }
     /// ```
-    /// - Important: `uiTextFieldTextRightViewMode` should not be set to `.never` to show the view.
+    /// - Important: ``SUITextField/uiTextFieldTextRightViewMode(_:)`` should not be set to `.never` to show the view.
     ///
     /// - Note: This api restricts the number of `rightView` modifier to 1 (since a text field
     /// can have 1 and only 1 right view at same time). This means that if you try to apply 2 times this modifier
@@ -770,14 +772,14 @@ public extension SUITextField {
         case .plain(let text): applyIfDifferent(value: text, at: \.placeholder)
         case nil: applyIfDifferent(value: nil, at: \.placeholder)
         }
-        applyIfDifferent(value: context.environment.uiFont, at: \.font)
+        applyIfDifferent(value: context.environment.uiTextFieldFont, at: \.font)
         applyIfDifferent(value: context.environment.uiReturnKeyType, at: \.returnKeyType)
         applyIfDifferent(value: context.environment.uiTextFieldSecureTextEntry, at: \.isSecureTextEntry)
         applyIfDifferent(value: context.environment.uiTextFieldClearButtonMode, at: \.clearButtonMode)
         applyIfDifferent(value: context.environment.uiTextFieldBorderStyle, at: \.borderStyle)
         applyIfDifferent(value: context.environment.uiTextAutocorrectionType, at: \.autocorrectionType)
         applyIfDifferent(value: context.environment.uiTextAutocapitalizationType, at: \.autocapitalizationType)
-        applyIfDifferent(value: context.environment.uiTextFieldTextContentMode, at: \.textContentType)
+        applyIfDifferent(value: context.environment.uiTextFieldTextContentType, at: \.textContentType)
         applyIfDifferent(value: context.environment.uiTextFieldKeyboardType, at: \.keyboardType)
         applyIfDifferent(value: context.environment.uiTextFieldTextAlignment, at: \.textAlignment)
         applyIfDifferent(value: context.environment.uiTextFieldTextLeftViewMode, at: \.leftViewMode)
