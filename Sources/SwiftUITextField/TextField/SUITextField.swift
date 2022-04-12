@@ -788,7 +788,9 @@ public extension SUITextField {
         applyIfDifferent(value: context.environment.uiTextFieldSpellCheckingType, at: \.spellCheckingType)
         applyIfDifferent(value: context.environment.uiTextFieldPasswordRules, at: \.passwordRules)
 
-        uiView.defaultTextAttributes = context.environment.uiTextFieldDefaultTextAttributes
+        if let attributes = context.environment.uiTextFieldDefaultTextAttributes {
+            uiView.defaultTextAttributes = attributes
+        }
 
         switch context.environment.uiTextFieldAdjustsFontSizeToFitWidth {
         case .disabled:

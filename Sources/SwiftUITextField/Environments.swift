@@ -64,7 +64,7 @@ private struct UITextFieldRightViewModeEnvironmentKey: EnvironmentKey {
 }
 
 private struct UITextFieldDefaultTextAttributesEnvironmentKey: EnvironmentKey {
-    static let defaultValue: [NSAttributedString.Key: Any] = [:]
+    static let defaultValue: [NSAttributedString.Key: Any]? = nil
 }
 
 private struct UITextFieldSpellCheckingTypeEnvironmentKey: EnvironmentKey {
@@ -178,7 +178,7 @@ public extension EnvironmentValues {
 
     /// The attributes dictionary of the ``SUITextField`` that styles active text,
     /// applied using ``SUITextField/uiTextFieldDefaultTextAttributes(_:)``.
-    var uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any] {
+    var uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any]? {
         get { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] }
         set { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] = newValue }
     }
@@ -345,10 +345,11 @@ public extension View {
     /// Sets attributes to the generated `NSAttributedString` for all ``SUITextField`` in this view.
     ///
     /// You can style the text/font using this modifier, allowing the text fields to be high customized.
+    /// Setting this modifier will override default styling of font, color and text alignment.
     ///
     /// - Parameter defaultTextAttributes: A dictionary of attributes applied to the `NSAttributedString` of text field.
     /// - Returns: A view with the chosen text attributes applied.
-    func uiTextFieldDefaultTextAttributes(_ defaultTextAttributes: [NSAttributedString.Key: Any]) -> some View {
+    func uiTextFieldDefaultTextAttributes(_ defaultTextAttributes: [NSAttributedString.Key: Any]?) -> some View {
         environment(\.uiTextFieldDefaultTextAttributes, defaultTextAttributes)
     }
 
