@@ -1,0 +1,505 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1F1A1D6C27F9BF8400A10FC0 /* SwiftUITextField in Frameworks */ = {isa = PBXBuildFile; productRef = 1F1A1D6B27F9BF8400A10FC0 /* SwiftUITextField */; };
+		1F6A07A827F9E78500383AC6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F927F7427F644AB00AAD74E /* ContentView.swift */; };
+		1F6A07A927F9E78500383AC6 /* SUITextFieldExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F927F7227F644AB00AAD74E /* SUITextFieldExampleApp.swift */; };
+		1F6A07AB27F9E78500383AC6 /* SwiftUITextField in Frameworks */ = {isa = PBXBuildFile; productRef = 1F6A07A627F9E78500383AC6 /* SwiftUITextField */; };
+		1F6A07AD27F9E78500383AC6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F927F7927F644AD00AAD74E /* Preview Assets.xcassets */; };
+		1F6A07AE27F9E78500383AC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F927F7627F644AD00AAD74E /* Assets.xcassets */; };
+		1F927F7327F644AB00AAD74E /* SUITextFieldExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F927F7227F644AB00AAD74E /* SUITextFieldExampleApp.swift */; };
+		1F927F7527F644AB00AAD74E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F927F7427F644AB00AAD74E /* ContentView.swift */; };
+		1F927F7727F644AD00AAD74E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F927F7627F644AD00AAD74E /* Assets.xcassets */; };
+		1F927F7A27F644AD00AAD74E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F927F7927F644AD00AAD74E /* Preview Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1F6A07B227F9E78500383AC6 /* SUITextFieldExamplev15.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SUITextFieldExamplev15.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F927F6F27F644AB00AAD74E /* SUITextFieldExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SUITextFieldExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F927F7227F644AB00AAD74E /* SUITextFieldExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SUITextFieldExampleApp.swift; sourceTree = "<group>"; };
+		1F927F7427F644AB00AAD74E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1F927F7627F644AD00AAD74E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1F927F7927F644AD00AAD74E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		1F927F8127F644BF00AAD74E /* SUITextField */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SUITextField; path = ..; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1F6A07AA27F9E78500383AC6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F6A07AB27F9E78500383AC6 /* SwiftUITextField in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F927F6C27F644AB00AAD74E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F1A1D6C27F9BF8400A10FC0 /* SwiftUITextField in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1F927F6627F644AB00AAD74E = {
+			isa = PBXGroup;
+			children = (
+				1F927F8027F644BF00AAD74E /* Packages */,
+				1F927F7127F644AB00AAD74E /* SUITextFieldExample */,
+				1F927F7027F644AB00AAD74E /* Products */,
+				1F927F8227F6451E00AAD74E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		1F927F7027F644AB00AAD74E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1F927F6F27F644AB00AAD74E /* SUITextFieldExample.app */,
+				1F6A07B227F9E78500383AC6 /* SUITextFieldExamplev15.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1F927F7127F644AB00AAD74E /* SUITextFieldExample */ = {
+			isa = PBXGroup;
+			children = (
+				1F927F7227F644AB00AAD74E /* SUITextFieldExampleApp.swift */,
+				1F927F7427F644AB00AAD74E /* ContentView.swift */,
+				1F927F7627F644AD00AAD74E /* Assets.xcassets */,
+				1F927F7827F644AD00AAD74E /* Preview Content */,
+			);
+			path = SUITextFieldExample;
+			sourceTree = "<group>";
+		};
+		1F927F7827F644AD00AAD74E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				1F927F7927F644AD00AAD74E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		1F927F8027F644BF00AAD74E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				1F927F8127F644BF00AAD74E /* SUITextField */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		1F927F8227F6451E00AAD74E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1F6A07A527F9E78500383AC6 /* SUITextFieldExamplev15 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F6A07AF27F9E78500383AC6 /* Build configuration list for PBXNativeTarget "SUITextFieldExamplev15" */;
+			buildPhases = (
+				1F6A07A727F9E78500383AC6 /* Sources */,
+				1F6A07AA27F9E78500383AC6 /* Frameworks */,
+				1F6A07AC27F9E78500383AC6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SUITextFieldExamplev15;
+			packageProductDependencies = (
+				1F6A07A627F9E78500383AC6 /* SwiftUITextField */,
+			);
+			productName = SUITextFieldExample;
+			productReference = 1F6A07B227F9E78500383AC6 /* SUITextFieldExamplev15.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1F927F6E27F644AB00AAD74E /* SUITextFieldExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F927F7D27F644AD00AAD74E /* Build configuration list for PBXNativeTarget "SUITextFieldExample" */;
+			buildPhases = (
+				1F927F6B27F644AB00AAD74E /* Sources */,
+				1F927F6C27F644AB00AAD74E /* Frameworks */,
+				1F927F6D27F644AB00AAD74E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SUITextFieldExample;
+			packageProductDependencies = (
+				1F1A1D6B27F9BF8400A10FC0 /* SwiftUITextField */,
+			);
+			productName = SUITextFieldExample;
+			productReference = 1F927F6F27F644AB00AAD74E /* SUITextFieldExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1F927F6727F644AB00AAD74E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					1F927F6E27F644AB00AAD74E = {
+						CreatedOnToolsVersion = 13.3;
+					};
+				};
+			};
+			buildConfigurationList = 1F927F6A27F644AB00AAD74E /* Build configuration list for PBXProject "SUITextFieldExample" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1F927F6627F644AB00AAD74E;
+			packageReferences = (
+			);
+			productRefGroup = 1F927F7027F644AB00AAD74E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1F927F6E27F644AB00AAD74E /* SUITextFieldExample */,
+				1F6A07A527F9E78500383AC6 /* SUITextFieldExamplev15 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1F6A07AC27F9E78500383AC6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F6A07AD27F9E78500383AC6 /* Preview Assets.xcassets in Resources */,
+				1F6A07AE27F9E78500383AC6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F927F6D27F644AB00AAD74E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F927F7A27F644AD00AAD74E /* Preview Assets.xcassets in Resources */,
+				1F927F7727F644AD00AAD74E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1F6A07A727F9E78500383AC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F6A07A827F9E78500383AC6 /* ContentView.swift in Sources */,
+				1F6A07A927F9E78500383AC6 /* SUITextFieldExampleApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F927F6B27F644AB00AAD74E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F927F7527F644AB00AAD74E /* ContentView.swift in Sources */,
+				1F927F7327F644AB00AAD74E /* SUITextFieldExampleApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1F6A07B027F9E78500383AC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SUITextFieldExample/Preview Content\"";
+				DEVELOPMENT_TEAM = SQ22A7PU8Y;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rico.SUITextFieldExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F6A07B127F9E78500383AC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SUITextFieldExample/Preview Content\"";
+				DEVELOPMENT_TEAM = SQ22A7PU8Y;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rico.SUITextFieldExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1F927F7B27F644AD00AAD74E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1F927F7C27F644AD00AAD74E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1F927F7E27F644AD00AAD74E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SUITextFieldExample/Preview Content\"";
+				DEVELOPMENT_TEAM = SQ22A7PU8Y;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rico.SUITextFieldExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F927F7F27F644AD00AAD74E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SUITextFieldExample/Preview Content\"";
+				DEVELOPMENT_TEAM = SQ22A7PU8Y;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rico.SUITextFieldExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1F6A07AF27F9E78500383AC6 /* Build configuration list for PBXNativeTarget "SUITextFieldExamplev15" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F6A07B027F9E78500383AC6 /* Debug */,
+				1F6A07B127F9E78500383AC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F927F6A27F644AB00AAD74E /* Build configuration list for PBXProject "SUITextFieldExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F927F7B27F644AD00AAD74E /* Debug */,
+				1F927F7C27F644AD00AAD74E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F927F7D27F644AD00AAD74E /* Build configuration list for PBXNativeTarget "SUITextFieldExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F927F7E27F644AD00AAD74E /* Debug */,
+				1F927F7F27F644AD00AAD74E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1F1A1D6B27F9BF8400A10FC0 /* SwiftUITextField */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftUITextField;
+		};
+		1F6A07A627F9E78500383AC6 /* SwiftUITextField */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwiftUITextField;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1F927F6727F644AB00AAD74E /* Project object */;
+}
