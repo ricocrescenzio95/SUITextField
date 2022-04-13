@@ -93,6 +93,7 @@ where Responder: Hashable, BackButton: View, NextButton: View, CenterView: View,
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+        .frame(minHeight: 44)
     }
 
     private var currentIndex: Int? {

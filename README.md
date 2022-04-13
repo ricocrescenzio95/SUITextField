@@ -44,6 +44,7 @@
 * A default `ResponderNavigatorView` usable as an `InputAccessoryView` to navigate through text fields
 * Attributed placeholder
 * `ParseableFormatStyle` when using `iOS 15`
+* `Foundation.Formatter` when using `pre-iOS 15`
 * DocC documented!
 
 ## Installation
@@ -125,10 +126,8 @@ Use Apple `DocC` generated documentation, from Xcode, `Product > Build Documenta
 ## Known Issues
 
 - When an external keyboard is connected and the software keyboard is hidden, 
-on iOS 15 there is small layout jump when switching from a text field with custom input view and one
-with normal software keyboard
-- On iOS 14 this behavior is worse: sometimes the system tries to re-layout the component infinitely, leading to a
-stack overflow and crash! Need to understand what actually happens under the hood...
+on iOS 13/15 there are small layout jumps when switching from a text fields
+- On iOS 14 this behavior is worse: the system tries to re-layout the component infinitely! Need to understand what actually happens under the hood...
 
 ## Found a bug or want new feature?
 

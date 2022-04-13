@@ -173,6 +173,129 @@ public extension SUITextField {
 
 }
 
+public extension SUITextField {
+
+  private init<V>(value: Binding<V>, formatter: Formatter, placeholder: TextType?, defaultValue: V?)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        let binding = Binding<String> {
+            formatter.string(for: value.wrappedValue) ?? ""
+        } set: { newValue in
+            var newObj: AnyObject? = nil
+            formatter.getObjectValue(&newObj, for: newValue, errorDescription: nil)
+            guard let newObj = (newObj as? V) ?? defaultValue else { return }
+            value.wrappedValue = newObj
+        }
+        self.init(
+            text: binding,
+            placeholder: placeholder,
+            autoSizeInputView: false,
+            leftView: { EmptyView() },
+            rightView: { EmptyView() },
+            inputView: { EmptyView() },
+            inputAccessoryView: { EmptyView() }
+        )
+    }
+  
+    /// Creates a text field that applies a format style to a bound value and a plain placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `Foundation.Formatter` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the formatter can parse the text.
+    /// If the formatter can’t parse the input, the bound value remains unchanged.
+    ///
+    /// The following example uses a Double as the bound value, and a `NumberFormatter`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters text that doesn’t represent a valid `Double`, the bound value doesn’t update.
+    ///
+    ///```swift
+    ///@State private var myDouble: Double = 0.673
+    ///@State private var numberFormatter: NumberFormatter = {
+    ///    var nf = NumberFormatter()
+    ///    nf.numberStyle = .decimal
+    ///    return nf
+    ///}()
+    ///
+    ///var body: some View {
+    ///    VStack {
+    ///        SUITextField(
+    ///            value: $myDouble,
+    ///            formatter: numberFormatter
+    ///        )
+    ///        Text(myDouble, format: .number)
+    ///        Text(myDouble, format: .number.precision(.significantDigits(5)))
+    ///        Text(myDouble, format: .number.notation(.scientific))
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - formatter: A subclasses of foundation `Formatter` to use when converting between the string the user edits and the
+    ///   underlying value of type `V`. If formatter can’t perform the conversion, the text field leaves binding.value unchanged.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: The plain string placeholder.
+    ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
+    init<V>(value: Binding<V>, formatter: Formatter, placeholder: String? = nil, defaultValue: V? = nil)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            formatter: formatter,
+            placeholder: placeholder.map { .plain($0) },
+            defaultValue: defaultValue
+        )
+    }
+  
+    /// Creates a text field that applies a format style to a bound value and an attributed placeholder.
+    ///
+    /// Use this initializer to create a text field that binds to a bound value, using a `Foundation.Formatter` to convert to and from this type.
+    /// Changes to the bound value update the string displayed by the text field.
+    /// Editing the text field updates the bound value, as long as the formatter can parse the text.
+    /// If the formatter can’t parse the input, the bound value remains unchanged.
+    ///
+    /// The following example uses a Double as the bound value, and a `NumberFormatter`
+    /// instance to convert to and from a string representation. As the user types, the bound value updates,
+    /// which in turn updates three `Text` views that use different format styles.
+    /// If the user enters text that doesn’t represent a valid `Double`, the bound value doesn’t update.
+    ///
+    ///```swift
+    ///@State private var myDouble: Double = 0.673
+    ///@State private var numberFormatter: NumberFormatter = {
+    ///    var nf = NumberFormatter()
+    ///    nf.numberStyle = .decimal
+    ///    return nf
+    ///}()
+    ///
+    ///var body: some View {
+    ///    VStack {
+    ///        SUITextField(
+    ///            value: $myDouble,
+    ///            formatter: numberFormatter
+    ///        )
+    ///        Text(myDouble, format: .number)
+    ///        Text(myDouble, format: .number.precision(.significantDigits(5)))
+    ///        Text(myDouble, format: .number.notation(.scientific))
+    ///    }
+    ///}
+    ///```
+    /// - Parameters:
+    ///   - value: The underlying value to edit.
+    ///   - formatter: A subclasses of foundation `Formatter` to use when converting between the string the user edits and the
+    ///   underlying value of type `V`. If formatter can’t perform the conversion, the text field leaves binding.value unchanged.
+    ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - placeholder: The `NSAttributedString` placeholder.
+    ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
+    init<V>(value: Binding<V>, formatter: Formatter, placeholder: NSAttributedString, defaultValue: V? = nil)
+    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        self.init(
+            value: value,
+            formatter: formatter,
+            placeholder: .attributed(placeholder),
+            defaultValue: defaultValue
+        )
+    }
+
+}
+
 @available(iOS 15, *)
 public extension SUITextField {
 
@@ -188,7 +311,7 @@ public extension SUITextField {
     private init<F>(value: Binding<F.FormatInput>, format: F, placeholder: TextType? = nil, defaultValue: F.FormatInput? = nil)
     where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
-        let binding = Binding<String>.init {
+        let binding = Binding<String> {
             format.format(value.wrappedValue)
         } set: { newValue in
             guard let newValue = (try? format.parseStrategy.parse(newValue)) ?? defaultValue else { return }
@@ -766,13 +889,19 @@ public extension SUITextField {
                 uiView[keyPath: keyPath] = value
             }
         }
-        uiView.text = text
+        
+        if let attributes = context.environment.uiTextFieldDefaultTextAttributes {
+            uiView.defaultTextAttributes = attributes
+        }
+        
         switch placeholder {
         case .attributed(let text): applyIfDifferent(value: text, at: \.attributedPlaceholder)
         case .plain(let text): applyIfDifferent(value: text, at: \.placeholder)
         case nil: applyIfDifferent(value: nil, at: \.placeholder)
         }
-        applyIfDifferent(value: context.environment.uiTextFieldFont, at: \.font)
+        
+        uiView.text = text
+
         applyIfDifferent(value: context.environment.uiReturnKeyType, at: \.returnKeyType)
         applyIfDifferent(value: context.environment.uiTextFieldSecureTextEntry, at: \.isSecureTextEntry)
         applyIfDifferent(value: context.environment.uiTextFieldClearButtonMode, at: \.clearButtonMode)
@@ -781,17 +910,12 @@ public extension SUITextField {
         applyIfDifferent(value: context.environment.uiTextAutocapitalizationType, at: \.autocapitalizationType)
         applyIfDifferent(value: context.environment.uiTextFieldTextContentType, at: \.textContentType)
         applyIfDifferent(value: context.environment.uiTextFieldKeyboardType, at: \.keyboardType)
-        applyIfDifferent(value: context.environment.uiTextFieldTextAlignment, at: \.textAlignment)
         applyIfDifferent(value: context.environment.uiTextFieldTextLeftViewMode, at: \.leftViewMode)
         applyIfDifferent(value: context.environment.uiTextFieldTextRightViewMode, at: \.rightViewMode)
         applyIfDifferent(value: context.environment.isEnabled, at: \.isEnabled)
         applyIfDifferent(value: context.environment.uiTextFieldSpellCheckingType, at: \.spellCheckingType)
         applyIfDifferent(value: context.environment.uiTextFieldPasswordRules, at: \.passwordRules)
-
-        if let attributes = context.environment.uiTextFieldDefaultTextAttributes {
-            uiView.defaultTextAttributes = attributes
-        }
-
+        
         switch context.environment.uiTextFieldAdjustsFontSizeToFitWidth {
         case .disabled:
             applyIfDifferent(value: false, at: \.adjustsFontSizeToFitWidth)
@@ -801,13 +925,11 @@ public extension SUITextField {
             applyIfDifferent(value: minSize, at: \.minimumFontSize)
         }
 
-        DispatchQueue.main.async {
-            context.coordinator.inputViewController?.rootView = inputView
-            context.coordinator.inputAccessoryViewController?.rootView = inputAccessoryView
-
-            context.coordinator.leftView?.rootView = leftView
-            context.coordinator.rightView?.rootView = rightView
-        }
+        context.coordinator.inputViewController?.rootView = inputView
+        context.coordinator.inputAccessoryViewController?.rootView = inputAccessoryView
+        
+        context.coordinator.leftView?.rootView = leftView
+        context.coordinator.rightView?.rootView = rightView
 
         updateProxy?(uiView)
     }

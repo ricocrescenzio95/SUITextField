@@ -15,10 +15,6 @@ private struct ResponderStorageKey: EnvironmentKey {
     static let defaultValue: ResponderStorage? = nil
 }
 
-private struct UIFontEnvironmentKey: EnvironmentKey {
-    static let defaultValue: UIFont? = nil
-}
-
 private struct UIReturnKeyTypeEnvironmentKey: EnvironmentKey {
     static let defaultValue: UIReturnKeyType = .default
 }
@@ -49,10 +45,6 @@ private struct UITextFieldKeyboardTypeEnvironmentKey: EnvironmentKey {
 
 private struct UITextFieldTextContentTypeEnvironmentKey: EnvironmentKey {
     static let defaultValue: UITextContentType? = nil
-}
-
-private struct UITextFieldTextAlignmentEnvironmentKey: EnvironmentKey {
-    static let defaultValue: NSTextAlignment = .left
 }
 
 private struct UITextFieldLeftViewModeEnvironmentKey: EnvironmentKey {
@@ -97,8 +89,32 @@ public extension EnvironmentValues {
 
     /// The `UIFont` of ``SUITextField``, applied using ``SUITextField/uiTextFieldFont(_:)``.
     var uiTextFieldFont: UIFont? {
-        get { self[UIFontEnvironmentKey.self] }
-        set { self[UIFontEnvironmentKey.self] = newValue?.copy() as? UIFont }
+        get { uiTextFieldDefaultTextAttributes?[.font] as? UIFont }
+        set {
+            if var attributes = uiTextFieldDefaultTextAttributes {
+                attributes[.font] = newValue?.copy()
+                uiTextFieldDefaultTextAttributes = attributes
+            } else if let newValue = newValue {
+                uiTextFieldDefaultTextAttributes = [.font: newValue.copy()]
+            } else {
+                uiTextFieldDefaultTextAttributes = nil
+            }
+        }
+    }
+    
+    /// The `UIColor` of ``SUITextField``, applied using ``SUITextField/uiTextFieldFont(_:)``.
+    var uiTextFieldTextColor: UIColor? {
+        get { uiTextFieldDefaultTextAttributes?[.foregroundColor] as? UIColor }
+        set {
+            if var attributes = uiTextFieldDefaultTextAttributes {
+                attributes[.foregroundColor] = newValue?.copy()
+                uiTextFieldDefaultTextAttributes = attributes
+            } else if let newValue = newValue {
+                uiTextFieldDefaultTextAttributes = [.foregroundColor: newValue.copy()]
+            } else {
+                uiTextFieldDefaultTextAttributes = nil
+            }
+        }
     }
 
     /// The `UIReturnKeyType` of ``SUITextField``, applied using ``SUITextField/uiTextFieldReturnKeyType(_:)``.
@@ -157,9 +173,23 @@ public extension EnvironmentValues {
 
     /// The `NSTextAlignment` of the ``SUITextField``,
     /// applied using ``SUITextField/uiTextFieldTextAlignment(_:)``.
-    var uiTextFieldTextAlignment: NSTextAlignment {
-        get { self[UITextFieldTextAlignmentEnvironmentKey.self] }
-        set { self[UITextFieldTextAlignmentEnvironmentKey.self] = newValue }
+    var uiTextFieldTextAlignment: NSTextAlignment? {
+        get { (uiTextFieldDefaultTextAttributes?[.paragraphStyle] as? NSParagraphStyle)?.alignment }
+        set {
+            if var attributes = uiTextFieldDefaultTextAttributes {
+                let paragraphStyle = (attributes[.paragraphStyle] as? NSParagraphStyle)?
+                    .mutableCopy() as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
+                paragraphStyle.alignment = newValue ?? .left
+                attributes[.paragraphStyle] = paragraphStyle
+                uiTextFieldDefaultTextAttributes = attributes
+            } else if let newValue = newValue {
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = newValue
+                uiTextFieldDefaultTextAttributes = [.paragraphStyle: paragraphStyle]
+            } else {
+                uiTextFieldDefaultTextAttributes = nil
+            }
+        }
     }
 
     /// The `UITextField.ViewMode` of  the ``SUITextField/leftView(view:)``,
@@ -177,7 +207,7 @@ public extension EnvironmentValues {
     }
 
     /// The attributes dictionary of the ``SUITextField`` that styles active text,
-    /// applied using ``SUITextField/uiTextFieldDefaultTextAttributes(_:)``.
+    /// applied using ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``.
     var uiTextFieldDefaultTextAttributes: [NSAttributedString.Key: Any]? {
         get { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] }
         set { self[UITextFieldDefaultTextAttributesEnvironmentKey.self] = newValue }
@@ -210,38 +240,26 @@ public extension View {
 
     /// Sets the default `UIFont` for ``SUITextField`` in this view.
     ///
-    /// Use `uiTextFieldFont(_:)` to apply a specific font to all of the ``SUITextField`` in a view.
+    /// Setting `nil` will restore the system font.
     ///
-    /// The example below shows the effects of applying fonts to individual
-    /// views and to view hierarchies. Font information flows down the view
-    /// hierarchy as part of the environment, and remains in effect unless
-    /// overridden at the level of an individual view or view container.
-    ///
-    /// Here, the outermost `VStack` applies a 16-point system font as a
-    /// default font to text fields contained in that `VStack`. Inside that stack,
-    /// the example applies a 20-point bold system font to just the first text
-    /// field; this explicitly overrides the default. The remaining stack and the
-    /// views contained with it continue to use the 16-point system font set by
-    /// their containing view:
-    ///
-    /// ```swift
-    /// VStack {
-    ///     SUITextField(text: $text, placeholder: "this text field has 20-point bold system font")
-    ///         .uiTextFieldFont(.systemFont(ofSize: 20, weight: .bold))
-    ///
-    ///     VStack {
-    ///         SUITextField(text: $text, placeholder: "this two text fields")
-    ///         SUITextField(text: $text, placeholder: "have same font applied from modifier")
-    ///     }
-    /// }
-    /// .uiTextFieldFont(.systemFont(ofSize: 16, weight: .light))
-    /// ```
+    /// - Note: This modifier overrides font in ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
     ///
     /// - Parameter font: The default font to use in this view.
-    ///
     /// - Returns: A view with the default font set to the value you supply.
     func uiTextFieldFont(_ font: UIFont?) -> some View {
         environment(\.uiTextFieldFont, font)
+    }
+    
+    /// Sets the text color for all ``SUITextField`` in this view.
+    ///
+    /// Setting `nil` will restore the system color.
+    ///
+    /// - Note: This modifier has higher priority than ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
+    ///
+    /// - Parameter color: The `UIColor` to be applied on all ``SUITextField`` in this view.
+    /// - Returns: A view with the text color you supply.
+    func uiTextFieldTextColor(_ color: UIColor?) -> some View {
+        environment(\.uiTextFieldTextColor, color)
     }
   
     /// Sets the return key type of the keyboard for all ``SUITextField`` in this view.
@@ -316,6 +334,8 @@ public extension View {
 
     /// Sets the text alignment for all ``SUITextField`` in this view.
     ///
+    /// - Note: This modifier has higher priority than ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
+    ///
     /// - Parameter textAlignment: The `NSTextAlignment` to be applied.
     /// - Returns: A view with the chosen text alignment applied.
     func uiTextFieldTextAlignment(_ textAlignment: NSTextAlignment) -> some View {
@@ -345,12 +365,36 @@ public extension View {
     /// Sets attributes to the generated `NSAttributedString` for all ``SUITextField`` in this view.
     ///
     /// You can style the text/font using this modifier, allowing the text fields to be high customized.
-    /// Setting this modifier will override default styling of font, color and text alignment.
     ///
-    /// - Parameter defaultTextAttributes: A dictionary of attributes applied to the `NSAttributedString` of text field.
+    /// - Note: This modifier has low priority than font, color and text alignment modifiers.
+    ///
+    /// - Parameters:
+    ///   - defaultTextAttributes: A dictionary of attributes applied to the `NSAttributedString` of text field.
+    ///   - mergePolicy: Indicates how apply the new attributes. If you used this modifier in a container view and you
+    ///   want to apply more styling, you can decided if the new style will merge with the old one and keep either new or old values
+    ///   for same key (using ``DefaultAttributesMergePolicy/keepNew`` and ``DefaultAttributesMergePolicy/keepOld``).
+    ///   If you want to apply **only** the new style and get rid of the old one,
+    ///   use ``DefaultAttributesMergePolicy/rewriteAll``. Default is ``DefaultAttributesMergePolicy/rewriteAll``
     /// - Returns: A view with the chosen text attributes applied.
-    func uiTextFieldDefaultTextAttributes(_ defaultTextAttributes: [NSAttributedString.Key: Any]?) -> some View {
-        environment(\.uiTextFieldDefaultTextAttributes, defaultTextAttributes)
+    func uiTextFieldDefaultTextAttributes(
+        _ defaultTextAttributes: [NSAttributedString.Key: Any]?,
+        mergePolicy: DefaultAttributesMergePolicy = .rewriteAll
+    ) -> some View {
+        transformEnvironment(\.uiTextFieldDefaultTextAttributes) { attributes in
+            var newAttributes = attributes
+            switch mergePolicy {
+            case .keepOld:
+                if let defaultTextAttributes = defaultTextAttributes {
+                    newAttributes = (newAttributes ?? [:]).merging(defaultTextAttributes) { old, new in old }
+                }
+            case .keepNew:
+                if let defaultTextAttributes = defaultTextAttributes {
+                    newAttributes = (newAttributes ?? [:]).merging(defaultTextAttributes) { old, new in new }
+                }
+            case .rewriteAll: newAttributes = defaultTextAttributes
+            }
+            attributes = newAttributes
+        }
     }
 
     /// Sets the spell checking type for all ``SUITextField`` in this view.
@@ -371,8 +415,11 @@ public extension View {
 
     /// Sets whether or not all ``SUITextField`` in this view should resize text based on text field width.
     ///
-    /// - Parameter fontSizeWidthAdjustment: The ``FontSizeWidthAdjustment`` to be applied.
+    /// - Parameter fontSizeWidthAdjustment: The ``SwiftUITextField/FontSizeWidthAdjustment`` to be applied.
     /// - Returns: A view with the adjustment behavior you supply.
+    ///
+    /// - Note: When using ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
+    /// this modifier is ignored by the underlying `UITextField`.
     func uiTextFieldAdjustsFontSizeToFitWidth(_ fontSizeWidthAdjustment: FontSizeWidthAdjustment) -> some View {
         environment(\.uiTextFieldAdjustsFontSizeToFitWidth, fontSizeWidthAdjustment)
     }

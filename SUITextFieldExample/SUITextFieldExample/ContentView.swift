@@ -15,6 +15,7 @@ struct ContentView: View {
         case second
         case third
         case fourth
+        case fifth
     }
     
     @State private var toggleFont = false
@@ -27,13 +28,30 @@ struct ContentView: View {
     
     let attributes: [NSAttributedString.Key: Any] = [
         .kern: 5,
-        .foregroundColor: UIColor.systemOrange
+        .foregroundColor: UIColor.systemOrange,
+        .font: UIFont.systemFont(ofSize: 20, weight: .black),
+        .paragraphStyle: {
+            let p = NSMutableParagraphStyle()
+            p.alignment = .right
+            return p
+        }()
+    ]
+    
+    let moreKern: [NSAttributedString.Key: Any] = [
+        .kern: 15,
     ]
     
     let placeholderAttributes: [NSAttributedString.Key: Any] = [
         .kern: 5,
         .foregroundColor: UIColor.systemGray
     ]
+  
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        formatter.timeStyle = .medium
+        return formatter
+    }()
     
     var body: some View {
         NavigationView {
@@ -59,6 +77,7 @@ struct ContentView: View {
                         }
                         .responder($focus, equals: .first)
                         .uiTextFieldTextLeftViewMode(.whileEditing)
+                        .uiTextFieldDefaultTextAttributes(moreKern, mergePolicy: .keepNew)
                     SUITextField(text: $text)
                         .inputAccessoryView {
                             navigator
@@ -68,37 +87,41 @@ struct ContentView: View {
                         SUITextField(
                             value: $myDouble,
                             format: .number,
-                            placeholder: AttributedString("Hey there").mergingAttributes(AttributeContainer(placeholderAttributes))
+                            placeholder: AttributedString("Hey there")
+                                .mergingAttributes(AttributeContainer(placeholderAttributes))
                         )
                         .inputAccessoryView {
                             navigator
                         }
                         .responder($focus, equals: .third)
-                        SUITextField(value: $date, format: .dateTime)
-                            .inputAccessoryView {
-                                navigator
-                            }
-                            .inputView {
-                                datePicker
-                            }
-                            .responder($focus, equals: .fourth)
-                    } else {
-                        SUITextField(text: .constant(date.description))
-                            .inputAccessoryView {
-                                navigator
-                            }
-                            .inputView {
-                                datePicker
-                            }
-                            .responder($focus, equals: .third)
+                        .uiTextFieldTextColor(.systemGreen)
                     }
+                    SUITextField(value: $date, formatter: formatter)
+                        .inputAccessoryView {
+                            navigator
+                        }
+                        .inputView {
+                            datePicker
+                        }
+                        .responder($focus, equals: .fourth)
+                        .uiTextFieldFont(.systemFont(ofSize: 14, weight: .light))
                 }
+                .uiTextFieldDefaultTextAttributes(attributes)
                 .padding()
+                SUITextField(value: $date, formatter: formatter)
+                    .inputAccessoryView {
+                        navigator
+                    }
+                    .inputView {
+                        datePicker
+                    }
+                    .responder($focus, equals: .fifth)
+                    .uiTextFieldDefaultTextAttributes(attributes, mergePolicy: .keepOld)
+                    .uiTextFieldTextColor(.systemRed)
+                    .uiTextFieldFont(.italicSystemFont(ofSize: 12))
             }
-            .uiTextFieldDefaultTextAttributes(attributes)
-            .uiTextFieldFont(toggleFont ? .monospacedSystemFont(ofSize: 50, weight: .medium) : nil)
+            .uiTextFieldFont(.systemFont(ofSize: 14, weight: .light))
             .uiTextFieldBorderStyle(.roundedRect)
-            .uiTextFieldAdjustsFontSizeToFitWidth(.enabled(minSize: 8))
             .navigationBarTitle("SUITextField")
         }
     }

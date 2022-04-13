@@ -9,7 +9,10 @@ A `SwiftUI` wrapper of `UITextField` that allows more customization and programm
 ``SUITextField`` is a wrapper of `UITextField` that allows to navigate programmatically through responders,
 allows to set a custom `inputView`, `inputAccessoryView` while editing, as well as `leftView` and `rightView`.
 
-You can also use all the `UITextFieldDelegate` methods, all exposed as `SwiftUI` modifiers.
+You can also use all the `UITextFieldDelegate` methods, all exposed as `SwiftUI` modifiers. 😎
+
+On `iOS 15`, you can use the new `ParseableFormatStyle` to bind the text field to a custom value; on `pre-iOS 15`
+a similar API is exposed using `Foundation.Formatter` 🥳
 
 All these additional customization are passed as `SwiftUI` views/modifiers, allowing to use its lovely declarative API! 🎉
 
@@ -64,6 +67,9 @@ struct ContentView: View {
 
     // more code...
 ```
+
+You can create a text field with a combination of text, plain placeholder, attributed placeholder, custom value and
+formatters. Check all the provided initializers in ``SUITextField``!
 
 ## Topics
 
