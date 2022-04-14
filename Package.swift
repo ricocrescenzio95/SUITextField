@@ -20,12 +20,15 @@ let package = Package(
     targets: [
         .target(
             name: "SwiftUITextField",
-            dependencies: []),
+            dependencies: []
+        ),
         .testTarget(
             name: "SUITextFieldTests",
             dependencies: [
                 "SwiftUITextField",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ]),
+            ],
+            exclude: ["__Snapshots__"]
+        ),
     ]
 )
