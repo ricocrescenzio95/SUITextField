@@ -8,6 +8,9 @@
 ### A SwiftUI wrapper of UITextField that allows more customization
 
 <p>
+  <a href="https://app.bitrise.io/app/e9993c1a127d5a26#">
+    <img src="https://app.bitrise.io/app/e9993c1a127d5a26/status.svg?token=WZGzlJfxkVPPq7MernCdVg&branch=master">
+  </a>
   <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
       <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dswift-versions">
   </a>
@@ -134,6 +137,8 @@ on iOS 13/15 there are small layout jumps when switching from a text fields
 If you found a bug, you can open an issue as a bug [here](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=bug&template=bug_report.md&title=%5BBUG%5D)
 
 Want a new feature? Open an issue [here](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=enhancement&template=feature_request.md&title=%5BNEW%5D)
+
+### Yu can also open your own PR and contribute to the project! [Contributing](CONTRIBUTING.md) 🤝
 
 ## License
 
