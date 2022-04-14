@@ -8,19 +8,22 @@
 ### A SwiftUI wrapper of UITextField that allows more customization
 
 <p>
-  <a href="https://app.bitrise.io/app/e9993c1a127d5a26#">
+  <a href="https://app.bitrise.io/app/e9993c1a127d5a26#" target="_blank">
     <img src="https://app.bitrise.io/app/e9993c1a127d5a26/status.svg?token=WZGzlJfxkVPPq7MernCdVg&branch=master">
   </a>
-  <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
-      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dswift-versions">
+  <a href="https://github.com/ricocrescenzio95/SUITextField/releases" target="_blank">
+    <img src="https://img.shields.io/github/v/release/ricocrescenzio95/SUITextField?include_prereleases&label=Swift%20Package%20Manager">
   </a>
-    <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
-      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dplatforms">
+  <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField" target="_blank">
+    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dswift-versions">
   </a>
-  <a href="https://saythanks.io/to/rico.crescenzio">
-      <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
+  <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField" target="_blank">
+    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dplatforms">
   </a>
-  <a href="https://www.paypal.com/donate/?hosted_button_id=RWDBC8TS5CNVA">
+  <a href="https://saythanks.io/to/rico.crescenzio" target="_blank">
+    <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
+  </a>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=RWDBC8TS5CNVA" target="_blank">
     <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat">
   </a>
 </p>
