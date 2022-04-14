@@ -37,6 +37,16 @@ class CoreTestCase: XCTestCase {
             testName: testName,
             line: line
         )
+        let darkMode = UITraitCollection(userInterfaceStyle: .dark)
+        SnapshotTesting.assertSnapshot(
+            matching: view,
+            as: .image(precision: 0.8, size: view.intrinsicContentSize, traits: darkMode),
+            named: name + "-dark",
+            record: recording,
+            file: file,
+            testName: testName,
+            line: line
+        )
     }
     
 }
