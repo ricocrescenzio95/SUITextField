@@ -7,12 +7,15 @@ let package = Package(
     name: "SwiftUITextField",
     platforms: [.iOS(.v13), .macCatalyst(.v13)],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "SwiftUITextField",
             targets: ["SwiftUITextField"]),
     ],
     dependencies: [
+        .package(
+            url: "https://github.com/pointfreeco/swift-snapshot-testing.git",
+            from: "1.9.0"
+        )
     ],
     targets: [
         .target(
@@ -20,6 +23,9 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "SUITextFieldTests",
-            dependencies: ["SwiftUITextField"]),
+            dependencies: [
+                "SwiftUITextField",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ]),
     ]
 )
