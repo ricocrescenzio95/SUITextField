@@ -28,7 +28,7 @@ let package = Package(
                 "SwiftUITextField",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ],
-            resources: [.copy("__Snapshots__")]
+            exclude: ["__Snapshots__"]
         ),
     ]
 )
