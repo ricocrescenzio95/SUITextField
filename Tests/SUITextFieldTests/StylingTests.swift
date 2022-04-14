@@ -85,5 +85,58 @@ final class StylingTests: CoreTestCase {
     func testJustifiedAlignment() {
         testAlignment(.justified)
     }
+    
+    func testDefaultTextAttributesRewriteAll() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemRed,
+            .font: UIFont.systemFont(ofSize: 12, weight: .bold),
+            .paragraphStyle: {
+                let paragraph = NSMutableParagraphStyle()
+                paragraph.alignment = .right
+                return paragraph
+            }(),
+            .kern: 10,
+            .backgroundColor: UIColor.systemYellow
+        ]
+        let view = SUITextField(text: .constant("test"))
+            .uiTextFieldDefaultTextAttributes(attributes)
+            .frame(width: 200)
+        assertSnapshot(matching: view, named: "textField")
+    }
+    
+    func testDefaultTextAttributesKeepNew() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemRed,
+            .kern: 5
+        ]
+        let newAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemBlue,
+        ]
+        let view = SUITextField(text: .constant("test"))
+            .uiTextFieldDefaultTextAttributes(newAttributes, mergePolicy: .keepNew)
+            .uiTextFieldDefaultTextAttributes(attributes)
+            .frame(width: 200)
+        assertSnapshot(matching: view, named: "textField")
+    }
+    
+    func testDefaultTextAttributesKeepOld() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemRed,
+            .kern: 5
+        ]
+        let newAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemBlue,
+            .paragraphStyle: {
+                let paragraph = NSMutableParagraphStyle()
+                paragraph.alignment = .right
+                return paragraph
+            }()
+        ]
+        let view = SUITextField(text: .constant("test"))
+            .uiTextFieldDefaultTextAttributes(newAttributes, mergePolicy: .keepOld)
+            .uiTextFieldDefaultTextAttributes(attributes)
+            .frame(width: 200)
+        assertSnapshot(matching: view, named: "textField")
+    }
 
 }
