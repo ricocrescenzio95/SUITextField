@@ -4,11 +4,11 @@ Thank you for investing your time in contributing to our project!
 
 ## Issues
 
-#### Create a new issue
+### Create a new issue
 
 Open an [issue](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=enhancement&template=feature_request.md&title=%5BNEW%5D) or a [bug](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=enhancement&template=feature_request.md&title=%5BNEW%5D).
 
-#### Solve an issue
+### Solve an issue
 
 Create a branch from an existing issue (or first create an issue) and work on it 🥳
 
