@@ -138,6 +138,8 @@ If you found a bug, you can open an issue as a bug [here](https://github.com/ric
 
 Want a new feature? Open an issue [here](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=enhancement&template=feature_request.md&title=%5BNEW%5D)
 
+### Yu can also open your own PR and contribute to the project! [Contributing](CONTRIBUTING.md) 🤝
+
 ## License
 
 This software is provided under the [MIT](LICENSE.md) license
