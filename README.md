@@ -8,6 +8,9 @@
 ### A SwiftUI wrapper of UITextField that allows more customization
 
 <p>
+  <a href="https://app.bitrise.io/app/e9993c1a127d5a26#">
+    <img src="https://app.bitrise.io/app/e9993c1a127d5a26/status.svg?token=WZGzlJfxkVPPq7MernCdVg&branch=master">
+  </a>
   <a href="https://swiftpackageindex.com/ricocrescenzio95/SUITextField">
       <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fricocrescenzio95%2FSUITextField%2Fbadge%3Ftype%3Dswift-versions">
   </a>
