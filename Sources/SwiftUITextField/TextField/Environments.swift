@@ -242,8 +242,6 @@ public extension View {
     ///
     /// Setting `nil` will restore the system font.
     ///
-    /// - Note: This modifier overrides font in ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
-    ///
     /// - Parameter font: The default font to use in this view.
     /// - Returns: A view with the default font set to the value you supply.
     func uiTextFieldFont(_ font: UIFont?) -> some View {
@@ -253,8 +251,6 @@ public extension View {
     /// Sets the text color for all ``SUITextField`` in this view.
     ///
     /// Setting `nil` will restore the system color.
-    ///
-    /// - Note: This modifier has higher priority than ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
     ///
     /// - Parameter color: The `UIColor` to be applied on all ``SUITextField`` in this view.
     /// - Returns: A view with the text color you supply.
@@ -334,8 +330,6 @@ public extension View {
 
     /// Sets the text alignment for all ``SUITextField`` in this view.
     ///
-    /// - Note: This modifier has higher priority than ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
-    ///
     /// - Parameter textAlignment: The `NSTextAlignment` to be applied.
     /// - Returns: A view with the chosen text alignment applied.
     func uiTextFieldTextAlignment(_ textAlignment: NSTextAlignment) -> some View {
@@ -365,8 +359,6 @@ public extension View {
     /// Sets attributes to the generated `NSAttributedString` for all ``SUITextField`` in this view.
     ///
     /// You can style the text/font using this modifier, allowing the text fields to be high customized.
-    ///
-    /// - Note: This modifier has low priority than font, color and text alignment modifiers.
     ///
     /// - Parameters:
     ///   - defaultTextAttributes: A dictionary of attributes applied to the `NSAttributedString` of text field.

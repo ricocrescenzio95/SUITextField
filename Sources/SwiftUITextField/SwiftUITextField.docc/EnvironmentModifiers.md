@@ -129,11 +129,15 @@ struct MyView: View {
 
 ## Topics
 
-### Modify appearence
+### Modify basic appearence
 
 - ``SUITextField/uiTextFieldFont(_:)``
 - ``SUITextField/uiTextFieldTextColor(_:)``
 - ``SUITextField/uiTextFieldTextAlignment(_:)``
+- ``SUITextField/uiTextFieldBorderStyle(_:)``
+
+### Modify advanced appearence 
+
 - ``SUITextField/uiTextFieldDefaultTextAttributes(_:mergePolicy:)``
 - ``DefaultAttributesMergePolicy``
 
@@ -142,7 +146,6 @@ struct MyView: View {
 - ``SUITextField/uiTextFieldReturnKeyType(_:)``
 - ``SUITextField/uiTextFieldSecureTextEntry(_:)``
 - ``SUITextField/uiTextFieldClearButtonMode(_:)``
-- ``SUITextField/uiTextFieldBorderStyle(_:)``
 - ``SUITextField/uiTextFieldAutocapitalizationType(_:)``
 - ``SUITextField/uiTextFieldAutocorrectionType(_:)``
 - ``SUITextField/uiTextFieldKeyboardType(_:)``
