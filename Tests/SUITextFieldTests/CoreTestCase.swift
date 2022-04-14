@@ -30,7 +30,7 @@ class CoreTestCase: XCTestCase {
         let view = UIHostingController(rootView: view).view!
         SnapshotTesting.assertSnapshot(
             matching: view,
-            as: .image(precision: 0.85, size: view.intrinsicContentSize),
+            as: .image(precision: 0.8, size: view.intrinsicContentSize),
             named: name,
             record: recording,
             file: file,
