@@ -13,7 +13,7 @@ import Combine
 ///
 /// You create a text field with a placeholder and a binding to a value. If the value is a string,
 /// the text field updates this value continuously as the user types or otherwise edits the text in the field.
-/// For non-string types (only available on `iOS 15`), it updates the value on each change.
+/// For non-string types, it updates the value on each change.
 ///
 /// The following example shows a text field to accept a username, and a `Text` view below it that shadows
 /// the continuously updated value of username. The Text view changes color as the user begins and ends editing.
@@ -38,10 +38,36 @@ import Combine
 ///}
 ///```
 ///
-/// **iOS 15 only**
+/// The bound value doesn’t have to be a string. By using a `Formatter` or `FormatStyle` (only `iOS 15`)
+/// you can bind the text field to a nonstring type.
 ///
-/// The bound value doesn’t have to be a string. By using a `FormatStyle`, you can bind the text field to a nonstring type,
-/// using the format style to convert the typed text into an instance of the bound type.
+/// **iOS 13 & 14**
+///
+/// Use a subclass of `Foundation.Formatter` to convert the typed text into an instance of the bound type.
+/// The following example uses a `DateFormatter` to convert the date typed in the text field to
+/// a `Date` instance.
+///
+///```swift
+///@State private var date = Date
+///let formatter: DateFormatter = {
+///    let formatter = DateFormatter()
+///    formatter.dateStyle = .short
+///    formatter.timeStyle = .short
+///    return formatter
+///}()
+///
+///var body: some View {
+///    SUITextField(
+///        value: $date,
+///        formatter: formatter
+///        placeholder: "Proper name"
+///    )
+///}
+///```
+///
+/// **iOS 15**
+///
+/// Use the format style to convert the typed text into an instance of the bound type.
 /// The following example uses a `PersonNameComponents.FormatStyle` to convert the name typed in the text field to
 /// a `PersonNameComponents` instance. A Text view below the text field shows the debug description string of this instance.
 ///
