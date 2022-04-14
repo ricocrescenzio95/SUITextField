@@ -3,6 +3,6 @@ import XCTest
 
 final class SwiftUITextFieldTests: XCTestCase {
     func testExample() throws {
-        XCTFail("this is a fail test 3")
+        
     }
 }
