@@ -10,6 +10,12 @@ import SnapshotTesting
 import SwiftUI
 
 class CoreTestCase: XCTestCase {
+    
+    override func setUp() {
+        super.setUp()
+        
+        XCTAssertEqual(UIDevice.current.name, "iPhone 11 Pro")
+    }
 
     func assertSnapshot<V>(
         matching view: V,
@@ -24,7 +30,7 @@ class CoreTestCase: XCTestCase {
         let view = UIHostingController(rootView: view).view!
         SnapshotTesting.assertSnapshot(
             matching: view,
-            as: .image(precision: 0.5, size: view.intrinsicContentSize),
+            as: .image(size: view.intrinsicContentSize),
             named: name,
             record: recording,
             file: file,
