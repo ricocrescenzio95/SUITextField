@@ -2,6 +2,25 @@
 
 ## Topics
 
+### Creating a text field with a string
+
+- ``SUITextField/init(text:placeholder:)-5btu0``
+- ``SUITextField/init(text:placeholder:)-7334w``
+- ``SUITextField/init(text:placeholder:)-9p6by``
+
+### Creating a text field with a value (iOS 15)
+
+- ``SUITextField/init(value:format:formatPolicy:placeholder:defaultValue:)-3i36v``
+- ``SUITextField/init(value:format:formatPolicy:placeholder:defaultValue:)-5fdb3``
+- ``SUITextField/init(value:format:formatPolicy:placeholder:)-9l23l``
+- ``SUITextField/init(value:format:formatPolicy:placeholder:)-2bhgs``
+- ``FormatPolicy``
+
+### Creating a text field with a value (pre-iOS 15)
+
+- ``SUITextField/init(value:formatter:formatPolicy:placeholder:defaultValue:)-3wopi``
+- ``SUITextField/init(value:formatter:formatPolicy:placeholder:defaultValue:)-1cub1``
+
 ### Modify style and behaviors
 
 - <doc:EnvironmentModifiers>
