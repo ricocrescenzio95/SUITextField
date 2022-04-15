@@ -135,6 +135,8 @@ Use Apple `DocC` generated documentation, from Xcode, `Product > Build Documenta
 on iOS 13/15 there are small layout jumps when switching from a text fields
 - On iOS 14 this behavior is worse: the system tries to re-layout the component infinitely! Need to understand what actually happens under the hood...
 
+Check this [issue](https://github.com/ricocrescenzio95/SUITextField/issues/5).
+
 ## Found a bug or want new feature?
 
 If you found a bug, you can open an issue as a bug [here](https://github.com/ricocrescenzio95/SUITextField/issues/new?assignees=ricocrescenzio95&labels=bug&template=bug_report.md&title=%5BBUG%5D)
