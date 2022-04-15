@@ -87,6 +87,7 @@ struct ContentView: View {
                         SUITextField(
                             value: $myDouble,
                             format: .number,
+                            formatPolicy: .onChange,
                             placeholder: AttributedString("Hey there")
                                 .mergingAttributes(AttributeContainer(placeholderAttributes))
                         )

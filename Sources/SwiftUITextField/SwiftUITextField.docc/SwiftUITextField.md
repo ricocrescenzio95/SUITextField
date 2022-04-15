@@ -84,7 +84,6 @@ formatters. Check all the provided initializers in ``SUITextField``!
 - ``ResponderState``
 - ``ResponderChainCoordinator``
 
-
 ### Miscellaneous 
 
 - ``CharacterReplacement``
