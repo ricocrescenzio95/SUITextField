@@ -138,6 +138,7 @@ where InputView: View, InputAccessoryView: View, LeftView: View, RightView: View
     private var onReturnKeyPressedAction: (() -> Void)? = nil
     private var onSelectionChangedAction: ((UITextField) -> Void)? = nil
     private var shouldChangeCharactersInAction: ((CharacterReplacement) -> Bool)? = nil
+    private var _onEndEditingAction: ((UITextField) -> Void)? = nil
 
     init(
         text: Binding<String>,
@@ -201,17 +202,26 @@ public extension SUITextField {
 
 public extension SUITextField {
 
-  private init<V>(value: Binding<V>, formatter: Formatter, placeholder: TextType?, defaultValue: V?)
-    where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
-        let binding = Binding<String> {
-            formatter.string(for: value.wrappedValue) ?? ""
-        } set: { newValue in
+    private init<V>(
+        value: Binding<V>,
+        formatter: Formatter,
+        formatPolicy: FormatPolicy,
+        placeholder: TextType?,
+        defaultValue: V?
+    ) where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        let set = { (text: String) -> Void in
             var newObj: AnyObject? = nil
-            formatter.getObjectValue(&newObj, for: newValue, errorDescription: nil)
+            formatter.getObjectValue(&newObj, for: text, errorDescription: nil)
             guard let newObj = (newObj as? V) ?? defaultValue else { return }
             value.wrappedValue = newObj
         }
-        self.init(
+        let binding = Binding<String> {
+            formatter.string(for: value.wrappedValue) ?? ""
+        } set: { newValue in
+            guard formatPolicy == .onChange else { return }
+            set(newValue)
+        }
+        let view = SUITextField(
             text: binding,
             placeholder: placeholder,
             autoSizeInputView: false,
@@ -220,13 +230,24 @@ public extension SUITextField {
             inputView: { EmptyView() },
             inputAccessoryView: { EmptyView() }
         )
+        if formatPolicy == .onCommit {
+            self = view.apply(
+                value: { textField in
+                    set(textField.text ?? "")
+                },
+                to: \._onEndEditingAction
+            )
+        } else {
+            self = view
+        }
     }
   
     /// Creates a text field that applies a format style to a bound value and a plain placeholder.
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `Foundation.Formatter` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the formatter can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the formatter can’t parse the input, the bound value remains unchanged.
     ///
     /// The following example uses a Double as the bound value, and a `NumberFormatter`
@@ -259,13 +280,22 @@ public extension SUITextField {
     ///   - formatter: A subclasses of foundation `Formatter` to use when converting between the string the user edits and the
     ///   underlying value of type `V`. If formatter can’t perform the conversion, the text field leaves binding.value unchanged.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: The plain string placeholder.
     ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
-    init<V>(value: Binding<V>, formatter: Formatter, placeholder: String? = nil, defaultValue: V? = nil)
+    init<V>(
+        value: Binding<V>,
+        formatter: Formatter,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: String? = nil,
+        defaultValue: V? = nil
+    )
     where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             formatter: formatter,
+            formatPolicy: formatPolicy,
             placeholder: placeholder.map { .plain($0) },
             defaultValue: defaultValue
         )
@@ -275,7 +305,8 @@ public extension SUITextField {
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `Foundation.Formatter` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the formatter can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the formatter can’t parse the input, the bound value remains unchanged.
     ///
     /// The following example uses a Double as the bound value, and a `NumberFormatter`
@@ -308,13 +339,22 @@ public extension SUITextField {
     ///   - formatter: A subclasses of foundation `Formatter` to use when converting between the string the user edits and the
     ///   underlying value of type `V`. If formatter can’t perform the conversion, the text field leaves binding.value unchanged.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: The `NSAttributedString` placeholder.
     ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
-    init<V>(value: Binding<V>, formatter: Formatter, placeholder: NSAttributedString, defaultValue: V? = nil)
+    init<V>(
+        value: Binding<V>,
+        formatter: Formatter,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: NSAttributedString,
+        defaultValue: V? = nil
+    )
     where InputView == EmptyView, InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             formatter: formatter,
+            formatPolicy: formatPolicy,
             placeholder: .attributed(placeholder),
             defaultValue: defaultValue
         )
@@ -334,16 +374,25 @@ public extension SUITextField {
         self.init(text: text, placeholder: .init(placeholder))
     }
 
-    private init<F>(value: Binding<F.FormatInput>, format: F, placeholder: TextType? = nil, defaultValue: F.FormatInput? = nil)
-    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    private init<F>(
+        value: Binding<F.FormatInput>,
+        format: F,
+        formatPolicy: FormatPolicy,
+        placeholder: TextType?,
+        defaultValue: F.FormatInput? = nil
+    ) where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
+        let set = { (text: String) -> Void in
+            guard let newValue = (try? format.parseStrategy.parse(text)) ?? defaultValue else { return }
+            value.wrappedValue = newValue
+        }
         let binding = Binding<String> {
             format.format(value.wrappedValue)
         } set: { newValue in
-            guard let newValue = (try? format.parseStrategy.parse(newValue)) ?? defaultValue else { return }
-            value.wrappedValue = newValue
+            guard formatPolicy == .onChange else { return }
+            set(newValue)
         }
-        self.init(
+        let view = SUITextField(
             text: binding,
             placeholder: placeholder,
             autoSizeInputView: false,
@@ -352,13 +401,24 @@ public extension SUITextField {
             inputView: { EmptyView() },
             inputAccessoryView: { EmptyView() }
         )
+        if formatPolicy == .onCommit {
+            self = view.apply(
+                value: { textField in
+                    set(textField.text ?? "")
+                },
+                to: \._onEndEditingAction
+            )
+        } else {
+            self = view
+        }
     }
 
     /// Creates a text field that applies a format style to a bound value and a plain placeholder.
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the format style can’t parse the input, the bound value remains unchanged.
     ///
     /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
@@ -385,14 +445,23 @@ public extension SUITextField {
     ///   - format: A format style of type F to use when converting between the string the user edits and the
     ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field leaves binding.value unchanged.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: The plain string placeholder
     ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
-    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: String? = nil, defaultValue: F.FormatInput? = nil)
+    init<F>(
+        value: Binding<F.FormatInput>,
+        format: F,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: String? = nil,
+        defaultValue: F.FormatInput? = nil
+    )
     where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             format: format,
+            formatPolicy: formatPolicy,
             placeholder: placeholder.map { .plain($0) },
             defaultValue: defaultValue
         )
@@ -402,7 +471,8 @@ public extension SUITextField {
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the format style can’t parse the input, the bound value remains unchanged.
     ///
     /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
@@ -430,28 +500,45 @@ public extension SUITextField {
     ///   - format: A format style of type F to use when converting between the string the user edits and the
     ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field leaves binding.value unchanged.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: An `AttributedString` placeholder.
     ///   - defaultValue: A default value to apply if conversion fails. Default is `nil` which mean bound value doesn't update in case of failure.
-    init<F>(value: Binding<F.FormatInput>, format: F, placeholder: AttributedString, defaultValue: F.FormatInput? = nil)
+    init<F>(
+        value: Binding<F.FormatInput>,
+        format: F,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: AttributedString,
+        defaultValue: F.FormatInput? = nil
+    )
     where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             format: format,
+            formatPolicy: formatPolicy,
             placeholder: .attributed(.init(placeholder)),
             defaultValue: defaultValue
         )
     }
 
-    private init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: TextType? = nil)
-    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    private init<F>(
+        value: Binding<F.FormatInput?>,
+        format: F,
+        formatPolicy: FormatPolicy,
+        placeholder: TextType? = nil
+    ) where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
-        let binding = Binding<String>.init {
+        let set = { (text: String) -> Void in
+            value.wrappedValue = try? format.parseStrategy.parse(text)
+        }
+        let binding = Binding<String> {
             value.wrappedValue.map { format.format($0) } ?? ""
         } set: { newValue in
+            guard formatPolicy == .onChange else { return }
             value.wrappedValue = try? format.parseStrategy.parse(newValue)
         }
-        self.init(
+        let view = SUITextField(
             text: binding,
             placeholder: placeholder,
             autoSizeInputView: false,
@@ -460,13 +547,24 @@ public extension SUITextField {
             inputView: { EmptyView() },
             inputAccessoryView: { EmptyView() }
         )
+        if formatPolicy == .onCommit {
+            self = view.apply(
+                value: { textField in
+                    set(textField.text ?? "")
+                },
+                to: \._onEndEditingAction
+            )
+        } else {
+            self = view
+        }
     }
 
     /// Creates a text field that applies a format style to a bound value and a plain placeholder.
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the format style can’t parse the input, the bound value is set to `nil`
     ///
     /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
@@ -491,13 +589,20 @@ public extension SUITextField {
     ///   - format: A format style of type F to use when converting between the string the user edits and the
     ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field set binding.value to `nil`.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: The plain string placeholder.
-    init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: String? = nil)
-    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    init<F>(
+        value: Binding<F.FormatInput?>,
+        format: F,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: String? = nil
+    ) where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             format: format,
+            formatPolicy: formatPolicy,
             placeholder: placeholder.map { .plain($0) }
         )
     }
@@ -506,7 +611,8 @@ public extension SUITextField {
     ///
     /// Use this initializer to create a text field that binds to a bound value, using a `ParseableFormatStyle` to convert to and from this type.
     /// Changes to the bound value update the string displayed by the text field.
-    /// Editing the text field updates the bound value, as long as the format style can parse the text.
+    /// Editing the text field updates the bound value (depending on ``FormatPolicy`` either on text change or on editing end),
+    /// as long as the formatter can parse the text.
     /// If the format style can’t parse the input, the bound value is set to `nil`
     ///
     /// The following example uses a Double as the bound value, and a `FloatingPointFormatStyle`
@@ -532,13 +638,20 @@ public extension SUITextField {
     ///   - format: A format style of type F to use when converting between the string the user edits and the
     ///   underlying value of type F.FormatInput. If format can’t perform the conversion, the text field set binding.value to `nil`.
     ///   If the user stops editing the text in an invalid state, the text field updates the field’s text to the last known valid value.
+    ///   - formatPolicy: Indicates when the bound value is updated. Default is ``FormatPolicy/onCommit``, to match
+    ///   same `SwiftUI.TextField` behavior.
     ///   - placeholder: The attributed string placeholder.
-    init<F>(value: Binding<F.FormatInput?>, format: F, placeholder: AttributedString)
-    where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
+    init<F>(
+        value: Binding<F.FormatInput?>,
+        format: F,
+        formatPolicy: FormatPolicy = .onCommit,
+        placeholder: AttributedString
+    ) where F: ParseableFormatStyle, F.FormatOutput == String, InputView == EmptyView,
     InputAccessoryView == EmptyView, LeftView == EmptyView, RightView == EmptyView {
         self.init(
             value: value,
             format: format,
+            formatPolicy: formatPolicy,
             placeholder: .attributed(.init(placeholder))
         )
     }
@@ -743,6 +856,7 @@ public extension SUITextField {
             .apply(value: textField.onReturnKeyPressedAction, to: \.onReturnKeyPressedAction)
             .apply(value: textField.onSelectionChangedAction, to: \.onSelectionChangedAction)
             .apply(value: textField.shouldChangeCharactersInAction, to: \.shouldChangeCharactersInAction)
+            .apply(value: textField._onEndEditingAction, to: \._onEndEditingAction)
     }
 
     private func apply<T>(value: T, to path: WritableKeyPath<Self, T>) -> Self {
@@ -1036,6 +1150,7 @@ public extension SUITextField {
         }
 
         public func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+            uiKitTextField._onEndEditingAction?(textField)
             removeCustomViews(to: textField)
             onViewResignFirstResponder()
             uiKitTextField.onEndEditingAction?(reason)
