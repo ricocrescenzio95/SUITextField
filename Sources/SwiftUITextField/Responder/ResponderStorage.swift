@@ -9,54 +9,58 @@ import Foundation
 
 class ResponderStorage: ObservableObject {
 
-    static let responderQueue = OperationQueue()
-
-    var erasedValue: AnyHashable? {
-        get { fatalError("Must subclass") }
-        set { objectWillChange.send() }
-    }
+    @Published var value: AnyHashable?
 
     var values = Set<AnyHashable>()
 
-    let defaultValue: Any
+    private let isBool: Bool
 
-    init(defaultValue: Any) {
-        self.defaultValue = defaultValue
-    }
-
-}
-
-class AnyHashableResponderStorage: ResponderStorage {
-
-    @Published var value: Any
-
-    override var erasedValue: AnyHashable? {
-        get { value as? AnyHashable }
-        set {
-            value = newValue ?? defaultValue
-            super.erasedValue = newValue
-        }
-    }
-
-    init<Value>(value: Value) where Value: Hashable {
+    init<H>(value: H?) where H: Hashable {
         self.value = value
-
-        super.init(defaultValue: value)
+        isBool = H.self == Bool.self
     }
-
-}
-
-/// Concrete `ResponderStorage` for bool binding.
-class BoolResponderStorage: ResponderStorage {
-
-    @Published var value: Bool = false
-
-    override var erasedValue: AnyHashable? {
-        get { value }
-        set {
-            value = newValue as? Bool ?? false
-            super.erasedValue = newValue
+    
+    func resetDefault() {
+        if isBool {
+            value = false
+        } else {
+            value = nil
         }
     }
 
 }
+
+//class AnyHashableResponderStorage: ResponderStorage {
+//
+//    @Published var value: Any
+//
+//    override var erasedValue: AnyHashable? {
+//        get { value as? AnyHashable }
+//        set {
+//            value = newValue ?? defaultValue
+//            super.erasedValue = newValue
+//        }
+//    }
+//
+//    init<Value>(value: Value) where Value: Hashable {
+//        self.value = value
+//
+//        super.init(defaultValue: value)
+//    }
+//
+//}
+//
+///// Concrete `ResponderStorage` for bool binding.
+//class BoolResponderStorage: ResponderStorage {
+//
+//    @Published var value: Bool = false
+//
+//    override var erasedValue: AnyHashable? {
+//        get { value }
+//        set {
+//            value = newValue as? Bool ?? false
+//            super.erasedValue = newValue
+//        }
+//    }
+//
+//}

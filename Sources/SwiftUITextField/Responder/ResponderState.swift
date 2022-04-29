@@ -95,20 +95,20 @@ import SwiftUI
 
     /// Creates a state that binds an optional `Hashable` value.
     public init<T>() where Value == T?, T : Hashable {
-        storage = AnyHashableResponderStorage(value: nil as Value)
+        storage = ResponderStorage(value: nil as Value)
     }
 
     /// Creates a state that binds boolean  value.
     public init() where Value == Bool {
-        storage = BoolResponderStorage(defaultValue: false)
+        storage = ResponderStorage(value: false)
     }
 
     /// The current state value, that changes when new text field becomes first responder (or resign).
     ///
     /// When no text field is first responder, the wrapped value will be nil (for optional-typed state) or false (for Bool- typed state).
     public var wrappedValue: Value {
-        get { storage.erasedValue as? Value ?? storage.defaultValue as! Value }
-        nonmutating set { storage.erasedValue = newValue }
+        get { storage.value as! Value }
+        nonmutating set { storage.value = newValue }
     }
 
     /// A projection of the focus state value that returns a binding.

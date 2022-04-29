@@ -116,7 +116,7 @@ struct ContentView: View {
                     .inputView {
                         datePicker
                     }
-                    .responder($focus, equals: .fifth)
+                    .responder($isFocused)
                     .uiTextFieldDefaultTextAttributes(attributes, mergePolicy: .keepOld)
                     .uiTextFieldTextColor(.systemRed)
                     .uiTextFieldFont(.italicSystemFont(ofSize: 12))

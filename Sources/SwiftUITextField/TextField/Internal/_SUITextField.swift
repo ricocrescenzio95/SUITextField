@@ -15,16 +15,12 @@ class _SUITextField: UITextField {
     var _inputAccessoryViewController: UIInputViewController?
 
     override var inputViewController: UIInputViewController? {
-        get {
-            _inputViewController
-        }
+        get { _inputViewController }
         set { _inputViewController = newValue }
     }
 
     override var inputAccessoryViewController: UIInputViewController? {
-        get {
-            _inputAccessoryViewController
-        }
+        get { _inputAccessoryViewController }
         set { _inputAccessoryViewController = newValue }
     }
 

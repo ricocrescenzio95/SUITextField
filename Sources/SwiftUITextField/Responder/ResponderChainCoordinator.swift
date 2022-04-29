@@ -76,26 +76,17 @@ public class ResponderChainCoordinator: NSObject {
 
         let applyResponder: (Bool) -> Void = { isFirstResponder in
             if isFirstResponder && !uiView.isFirstResponder {
-                DispatchQueue.main.async {
-                    uiView.becomeFirstResponder()
-                }
+                uiView.becomeFirstResponder()
             } else if !isFirstResponder && uiView.isFirstResponder {
-                DispatchQueue.main.async {
-                    uiView.resignFirstResponder()
-                }
+                uiView.resignFirstResponder()
             }
         }
 
-        if let responderStorage = context.environment.responderStorage as? BoolResponderStorage {
+        if let responderStorage = context.environment.responderStorage {
             cancellable = responderStorage.$value
+                .removeDuplicates()
                 .sink(receiveValue: { selectedValue in
-                    applyResponder(selectedValue)
-                })
-        } else if let responderStorage = context.environment.responderStorage as? AnyHashableResponderStorage {
-            cancellable = responderStorage.$value
-                .compactMap { $0 as? Hashable }
-                .sink(receiveValue: { selectedValue in
-                    applyResponder(value.hashValue == selectedValue.hashValue)
+                    applyResponder(value == selectedValue)
                 })
         }
         responderStorage = context.environment.responderStorage
@@ -110,9 +101,8 @@ public class ResponderChainCoordinator: NSObject {
     ///
     /// - Warning: Be sure you call this in your custom implementation. Avoiding it, can break the responder chain system.
     public func onViewBecomeFirstResponder() {
-        if responderStorage?.erasedValue != responderValue {
-            responderStorage?.erasedValue = responderValue
-        }
+        guard responderStorage?.value != responderValue else { return }
+        responderStorage?.value = responderValue
     }
 
     /// Apply the correct value to the bound ``ResponderState`` when view resign first responder.
@@ -123,13 +113,8 @@ public class ResponderChainCoordinator: NSObject {
     ///
     /// - Warning: Be sure you call this in your custom implementation. Avoiding it, can break the responder chain system.
     public func onViewResignFirstResponder() {
-        if responderStorage?.erasedValue == responderValue {
-            if let responderStorage = responderStorage as? BoolResponderStorage {
-                responderStorage.value = false
-            } else if let responderStorage = responderStorage as? AnyHashableResponderStorage {
-                responderStorage.value = responderStorage.defaultValue
-            }
-        }
+        guard responderStorage?.value == responderValue else { return }
+        responderStorage?.resetDefault()
     }
 
 }
