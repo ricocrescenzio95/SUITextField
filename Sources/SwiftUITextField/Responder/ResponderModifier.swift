@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public extension SUITextField {
+public extension View {
 
     /// Modifies this view by binding its responder state to the given state value.
     ///
