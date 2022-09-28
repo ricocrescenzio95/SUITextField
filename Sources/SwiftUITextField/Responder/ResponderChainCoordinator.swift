@@ -93,7 +93,7 @@ public class ResponderChainCoordinator: NSObject {
                 })
         } else if let responderStorage = context.environment.responderStorage as? AnyHashableResponderStorage {
             cancellable = responderStorage.$value
-                .compactMap { $0 as? Hashable }
+                .compactMap { $0 as? (any Hashable) }
                 .sink(receiveValue: { selectedValue in
                     applyResponder(value.hashValue == selectedValue.hashValue)
                 })
