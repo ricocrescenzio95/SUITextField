@@ -56,7 +56,7 @@ import Combine
 /// - Warning: Be sure you call ``onViewBecomeFirstResponder()`` and ``onViewResignFirstResponder()`` at appropriate time
 /// in your custom implementation otherwise you might break the responder chain system.
 /// 
-public class ResponderChainCoordinator: NSObject {
+open class ResponderChainCoordinator: NSObject {
 
     private var responderValue: AnyHashable?
     private var responderStorage: ResponderStorage?
